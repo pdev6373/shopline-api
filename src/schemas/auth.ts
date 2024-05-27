@@ -1,10 +1,22 @@
 import { z } from 'zod';
 
+enum UserRoles {
+  Admin = 'Admin',
+  User = 'User',
+  Company = 'Company',
+}
+
 const registration = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  firstname: z.string(),
+  lastname: z.string(),
   email: z.string().email(),
   password: z.string().min(8),
+  role: z.nativeEnum(UserRoles).optional(),
+});
+
+const verifyEmail = z.object({
+  otp: z.string(),
+  email: z.string().min(8),
 });
 
 const forgotPassword = z.object({
@@ -13,7 +25,7 @@ const forgotPassword = z.object({
   phoneNumber: z.string(),
 });
 
-const verifyEmail = z.object({
+const resendVerificationCode = z.object({
   otp: z.string(),
   email: z.string().min(8),
 });
@@ -32,6 +44,7 @@ export default {
   registration,
   forgotPassword,
   verifyEmail,
+  resendVerificationCode,
   newPassword,
   login,
 };

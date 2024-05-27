@@ -1,11 +1,12 @@
-import express from 'express';
+import { Router } from 'express';
 import authRoutes from './auth';
 import { verifyJWT } from '@src/middlewares';
 // const UserRoutes = require('./user');
 // const PostRoutes = require('./post');
 
 const routes = () => {
-  const router = express.Router();
+  const router = Router();
+
   router.use('/auth', authRoutes());
   router.use(verifyJWT);
   //   router.use('/user', UserRoutes());

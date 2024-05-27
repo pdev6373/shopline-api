@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authController } from '@src/controllers';
 import { rateLimiter, validateData } from '@src/middlewares';
-import authSchema from '@src/schemas/auth';
+import { authSchema } from '@src/schemas';
 
 const authRoutes = () => {
   const router = Router();
@@ -20,6 +20,11 @@ const authRoutes = () => {
     '/verify',
     validateData(authSchema.verifyEmail),
     authController.verifyEmail,
+  );
+  router.post(
+    '/resend-verification-code',
+    validateData(authSchema.resendVerificationCode),
+    authController.resendVerificationCode,
   );
   router.patch(
     '/new-password',
