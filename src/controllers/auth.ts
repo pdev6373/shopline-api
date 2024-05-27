@@ -185,7 +185,7 @@ const verifyEmail = async (req: Request, res: Response) => {
   const savedUser = await user.save();
 
   if (savedUser) {
-    await foundOTP[0]?.deleteOne();
+    await OTP.deleteMany({ email });
 
     return res.json({
       success: true,
@@ -198,7 +198,46 @@ const verifyEmail = async (req: Request, res: Response) => {
     .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
-const forgotPassword = async () => {};
+const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email }).exec();
+  if (!user)
+    return res
+      .status(400)
+      .send({ success: false, message: 'Account does not exist' });
+
+  if (!user.isVerified)
+    return res
+      .status(401)
+      .send({ success: false, message: 'Account not verified' });
+
+  let otp = generate(6, otpOptions);
+  let result = await OTP.findOne({ otp });
+
+  while (result?.email === email) {
+    otp = generate(6, otpOptions);
+    result = await OTP.findOne({ otp });
+  }
+
+  const hashedOTP = await hash(otp, Number(process.env.SALT));
+
+  const createdOTP = await OTP.create({
+    email,
+    otp: hashedOTP,
+    type: 'Password Reset',
+  });
+
+  if (createdOTP)
+    return res.json({
+      success: true,
+      message: `A reset code was resent to ${email}`,
+    });
+
+  return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
+};
 
 const newPassword = async (req: Request, res: Response) => {
   const { password, otp, email } = req.body;
@@ -238,12 +277,21 @@ const newPassword = async (req: Request, res: Response) => {
       .json({ success: false, message: 'Account not verified' });
 
   user.password = await hash(password, Number(process.env.SALT));
-  await user.save();
 
-  return res.json({
-    success: true,
-    message: 'Password changed successfully',
-  });
+  const savedUser = await user.save();
+
+  if (savedUser) {
+    await OTP.deleteMany({ email });
+
+    return res.json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  }
+
+  return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
 // Login
