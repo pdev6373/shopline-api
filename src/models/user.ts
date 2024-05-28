@@ -1,5 +1,4 @@
 import { model, Schema } from 'mongoose';
-import { sign } from 'jsonwebtoken';
 
 const userSchema = new Schema(
   {
@@ -38,14 +37,5 @@ const userSchema = new Schema(
     timestamps: true,
   },
 );
-
-userSchema.methods.generateVerificationToken = function () {
-  const verificationToken = sign(
-    { id: this._id },
-    `${process.env.USER_VERIFICATION_TOKEN_SECRET}`,
-    { expiresIn: '5m' },
-  );
-  return verificationToken;
-};
 
 export default model('User', userSchema);

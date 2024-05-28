@@ -5,10 +5,38 @@ import { compare, hash } from 'bcrypt';
 import { generate } from 'otp-generator';
 import { sign, verify } from 'jsonwebtoken';
 
+type GenerateOTPType = {
+  email: string;
+  type?: 'Verify Account' | 'Password Reset';
+};
+
 const otpOptions = {
   upperCaseAlphabets: false,
   lowerCaseAlphabets: false,
   specialChars: false,
+};
+
+const generateOTP = async ({
+  email,
+  type = 'Verify Account',
+}: GenerateOTPType) => {
+  let otp = generate(6, otpOptions);
+  let result = await OTP.findOne({ otp });
+
+  while (result?.email === email) {
+    otp = generate(6, otpOptions);
+    result = await OTP.findOne({ otp });
+  }
+
+  const hashedOTP = await hash(otp, Number(process.env.SALT));
+
+  const createdOTP = await OTP.create({
+    email,
+    type,
+    otp: hashedOTP,
+  });
+
+  return !!createdOTP;
 };
 
 // REGISTER
@@ -30,23 +58,11 @@ const register = async (req: Request, res: Response) => {
     const updatedUser = await user.save();
 
     if (updatedUser) {
-      let otp = generate(6, otpOptions);
-      let result = await OTP.findOne({ otp });
-
-      while (result?.email === email) {
-        otp = generate(6, otpOptions);
-        result = await OTP.findOne({ otp });
-      }
-
-      const hashedOTP = await hash(otp, Number(process.env.SALT));
-
-      const createdOTP = await OTP.create({
+      const generatedOTP = await generateOTP({
         email,
-        otp: hashedOTP,
-        type: 'Verify Account',
       });
 
-      if (createdOTP)
+      if (generatedOTP)
         return res.json({
           success: true,
           message: `A verification code was sent to ${email}`,
@@ -73,23 +89,11 @@ const register = async (req: Request, res: Response) => {
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 
-  let otp = generate(6, otpOptions);
-  let result = await OTP.findOne({ otp });
-
-  while (result?.email === email) {
-    otp = generate(6, otpOptions);
-    result = await OTP.findOne({ otp });
-  }
-
-  const hashedOTP = await hash(otp, Number(process.env.SALT));
-
-  const createdOTP = await OTP.create({
+  const generatedOTP = await generateOTP({
     email,
-    otp: hashedOTP,
-    type: 'Verify Account',
   });
 
-  if (createdOTP)
+  if (generatedOTP)
     return res.json({
       success: true,
       message: `A verification code was sent to ${email}`,
@@ -116,23 +120,11 @@ const resendVerificationCode = async (req: Request, res: Response) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account already verified' });
 
-  let otp = generate(6, otpOptions);
-  let result = await OTP.findOne({ otp });
-
-  while (result?.email === email) {
-    otp = generate(6, otpOptions);
-    result = await OTP.findOne({ otp });
-  }
-
-  const hashedOTP = await hash(otp, Number(process.env.SALT));
-
-  const createdOTP = await OTP.create({
+  const generatedOTP = await generateOTP({
     email,
-    otp: hashedOTP,
-    type: 'Verify Account',
   });
 
-  if (createdOTP)
+  if (generatedOTP)
     return res.json({
       success: true,
       message: `A verification code was resent to ${email}`,
@@ -205,30 +197,19 @@ const forgotPassword = async (req: Request, res: Response) => {
   if (!user)
     return res
       .status(400)
-      .send({ success: false, message: 'Account does not exist' });
+      .json({ success: false, message: 'Account does not exist' });
 
   if (!user.isVerified)
     return res
       .status(401)
-      .send({ success: false, message: 'Account not verified' });
+      .json({ success: false, message: 'Account not verified' });
 
-  let otp = generate(6, otpOptions);
-  let result = await OTP.findOne({ otp });
-
-  while (result?.email === email) {
-    otp = generate(6, otpOptions);
-    result = await OTP.findOne({ otp });
-  }
-
-  const hashedOTP = await hash(otp, Number(process.env.SALT));
-
-  const createdOTP = await OTP.create({
+  const generatedOTP = await generateOTP({
     email,
-    otp: hashedOTP,
     type: 'Password Reset',
   });
 
-  if (createdOTP)
+  if (generatedOTP)
     return res.json({
       success: true,
       message: `A reset code was resent to ${email}`,
@@ -250,7 +231,7 @@ const newPassword = async (req: Request, res: Response) => {
       message: 'Invalid OTP',
     });
 
-  if (foundOTP[0].type !== 'Verify Account')
+  if (foundOTP[0].type !== 'Password Reset')
     return res.status(400).json({
       success: false,
       message: 'Invalid OTP',
@@ -303,19 +284,19 @@ const login = async (req: Request, res: Response) => {
   if (!user)
     return res
       .status(400)
-      .send({ success: false, message: 'Account does not exist' });
+      .json({ success: false, message: 'Account does not exist' });
 
   if (!user.isVerified)
     return res
       .status(401)
-      .send({ success: false, message: 'Account not verified' });
+      .json({ success: false, message: 'Account not verified' });
 
   const match = await compare(password, user.password);
 
   if (!match)
     return res
       .status(401)
-      .send({ success: false, message: 'Incorrect email or password' });
+      .json({ success: false, message: 'Incorrect email or password' });
 
   const accessToken = sign(
     {
@@ -352,14 +333,14 @@ const refresh = async (req: Request, res: Response) => {
   const cookies = req.cookies;
 
   if (!cookies?.jwt)
-    return res.status(401).send({ success: false, message: 'Unauthorized' });
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
 
   const refreshToken = cookies.jwt;
 
   const decoded: any = verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
 
   if (!decoded)
-    return res.status(403).send({ success: false, message: 'Forbidden' });
+    return res.status(403).json({ success: false, message: 'Forbidden' });
 
   const user = await User.findOne({ email: decoded.email })
     .select('-password')
@@ -367,12 +348,12 @@ const refresh = async (req: Request, res: Response) => {
     .exec();
 
   if (!user)
-    return res.status(401).send({ success: false, message: 'Unauthorized' });
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
 
   if (!user.isVerified)
     return res
       .status(401)
-      .send({ success: false, message: 'Account not verified' });
+      .json({ success: false, message: 'Account not verified' });
 
   const accessToken = sign(
     {
