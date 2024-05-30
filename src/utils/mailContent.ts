@@ -538,7 +538,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                           line-height: 25.2px;
                                           color: #666666;
                                         "
-                                        >Hello from Meetmax,</span
+                                        >Hello from Shopline,</span
                                       >
                                     </p>
                                     <p style="font-size: 14px; line-height: 140%">
@@ -572,8 +572,8 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                         >
                                         ${
                                           type === 'password-reset'
-                                            ? 'To reset your password, please copy the link below and paste it in your browser:'
-                                            : 'To verify your account, please copy the link below and paste it in your browser:'
+                                            ? 'To reset your password, please use the verification code below:'
+                                            : 'To verify your account, please use the verification code below:'
                                         }
                                         
                                       </span>
@@ -674,7 +674,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                             >${
                                               type === 'password-reset'
                                                 ? 'Please ignore this email if you did not request a password change.'
-                                                : 'Please ignore this email if you did not sign up on Meetmax.'
+                                                : 'Please ignore this email if you did not sign up on Shopline.'
                                             }
                                             </span
                                           ></em
@@ -928,7 +928,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                               line-height: 19.6px;
                                               font-size: 14px;
                                             "
-                                            >Meetmax &copy;&nbsp; All Rights
+                                            >Shopline &copy;&nbsp; All Rights
                                             Reserved</span
                                           ></span
                                         ></span

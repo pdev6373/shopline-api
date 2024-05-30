@@ -12,11 +12,6 @@ const authRoutes = () => {
     authController.register,
   );
   router.post(
-    '/forgot-password',
-    validateData(authSchema.forgotPassword),
-    authController.forgotPassword,
-  );
-  router.post(
     '/verify',
     validateData(authSchema.verifyEmail),
     authController.verifyEmail,
@@ -25,6 +20,11 @@ const authRoutes = () => {
     '/resend-verification-code',
     validateData(authSchema.resendVerificationCode),
     authController.resendVerificationCode,
+  );
+  router.post(
+    '/forgot-password',
+    validateData(authSchema.forgotPassword),
+    authController.forgotPassword,
   );
   router.patch(
     '/new-password',

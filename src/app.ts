@@ -1,5 +1,6 @@
-import 'express-async-errors';
 import { config } from 'dotenv';
+config();
+import 'express-async-errors';
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -9,8 +10,6 @@ import { logging } from './middlewares';
 import { corsOptions, connectDatabase } from './configs';
 import routes from './routes';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-
-config();
 
 logging.info('info');
 logging.warn('warn');

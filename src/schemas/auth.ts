@@ -6,6 +6,11 @@ enum UserRoles {
   Company = 'Company',
 }
 
+enum OTPTypes {
+  'Verify Account' = 'Verify Account',
+  'Password Reset' = 'Password Reset',
+}
+
 const registration = z.object({
   firstname: z.string(),
   lastname: z.string(),
@@ -19,20 +24,19 @@ const verifyEmail = z.object({
   email: z.string().min(8),
 });
 
-const forgotPassword = z.object({
-  type: z.string(),
+const resendVerificationCode = z.object({
   email: z.string().min(8),
-  phoneNumber: z.string(),
+  type: z.nativeEnum(OTPTypes),
 });
 
-const resendVerificationCode = z.object({
-  otp: z.string(),
+const forgotPassword = z.object({
   email: z.string().min(8),
 });
 
 const newPassword = z.object({
-  password: z.string(),
   email: z.string().min(8),
+  password: z.string(),
+  otp: z.string(),
 });
 
 const login = z.object({

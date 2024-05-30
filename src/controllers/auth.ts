@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { compare, hash } from 'bcrypt';
 import { generate } from 'otp-generator';
 import { sign, verify } from 'jsonwebtoken';
+import { sendVerificationEmail } from '@src/models/otp';
 
 type GenerateOTPType = {
   email: string;
@@ -30,13 +31,25 @@ const generateOTP = async ({
 
   const hashedOTP = await hash(otp, Number(process.env.SALT));
 
+  await OTP.deleteMany({ email });
+
   const createdOTP = await OTP.create({
     email,
     type,
     otp: hashedOTP,
   });
 
-  return !!createdOTP;
+  if (createdOTP) {
+    const response = await sendVerificationEmail({
+      email,
+      otp,
+      type,
+    });
+
+    return response;
+  }
+
+  return false;
 };
 
 // REGISTER
@@ -104,9 +117,9 @@ const register = async (req: Request, res: Response) => {
     .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
-// Resend Verification Code
-const resendVerificationCode = async (req: Request, res: Response) => {
-  const { email } = req.body;
+// Verify Email
+const verifyEmail = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
 
   const user = await User.findOne({ email }).exec();
 
@@ -119,25 +132,6 @@ const resendVerificationCode = async (req: Request, res: Response) => {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account already verified' });
-
-  const generatedOTP = await generateOTP({
-    email,
-  });
-
-  if (generatedOTP)
-    return res.json({
-      success: true,
-      message: `A verification code was resent to ${email}`,
-    });
-
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
-};
-
-// Verify Email
-const verifyEmail = async (req: Request, res: Response) => {
-  const { email, otp } = req.body;
 
   const foundOTP = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
 
@@ -161,18 +155,6 @@ const verifyEmail = async (req: Request, res: Response) => {
       message: 'Invalid OTP',
     });
 
-  const user = await User.findOne({ email }).exec();
-
-  if (!user)
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ success: false, message: 'Account does not exist' });
-
-  if (user.isVerified)
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ success: false, message: 'Account already verified' });
-
   user.isVerified = true;
   const savedUser = await user.save();
 
@@ -190,6 +172,39 @@ const verifyEmail = async (req: Request, res: Response) => {
     .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
+// Resend Verification Code
+const resendVerificationCode = async (req: Request, res: Response) => {
+  const { email, type } = req.body;
+
+  const user = await User.findOne({ email }).exec();
+
+  if (!user)
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: 'Account does not exist' });
+
+  if (type === 'Verify Account' && user.isVerified)
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ success: false, message: 'Account already verified' });
+
+  const generatedOTP = await generateOTP({
+    email,
+    type,
+  });
+
+  if (generatedOTP)
+    return res.json({
+      success: true,
+      message: `A verification code was resent to ${email}`,
+    });
+
+  return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
+};
+
+// Forgot Password
 const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
 
@@ -220,6 +235,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
+// New Password
 const newPassword = async (req: Request, res: Response) => {
   const { password, otp, email } = req.body;
 
@@ -312,20 +328,20 @@ const login = async (req: Request, res: Response) => {
     { expiresIn: '7d' },
   );
 
-  res.cookie('jwt', refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+  const { password: userPassword, ...userDetails } = user.toObject();
 
-  const { password: userPassword, ...userDetails } = user;
-
-  return res.json({
-    success: true,
-    message: 'User logged in',
-    data: { accessToken, userDetails },
-  });
+  return res
+    .cookie('jwt', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json({
+      success: true,
+      message: 'User logged in',
+      data: { accessToken, userDetails },
+    });
 };
 
 // Refresh

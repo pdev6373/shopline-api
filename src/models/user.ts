@@ -23,6 +23,23 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
+    pin: {
+      type: String,
+      trim: true,
+    },
+    accountDetails: {
+      //   ref,
+    },
+    phoneNumber: {
+      type: String,
+      trim: true,
+    },
+    socialMedia: {
+      // ref
+    },
+    pushNotification: {
+      // ref
+    },
     isVerified: {
       type: Boolean,
       default: false,
@@ -31,6 +48,11 @@ const userSchema = new Schema(
       type: String,
       enum: ['Admin', 'User', 'Company'],
       default: 'User',
+    },
+    membership: {
+      type: String,
+      enum: ['Regular', 'Silver', 'Gold'],
+      default: 'Regular',
     },
   },
   {

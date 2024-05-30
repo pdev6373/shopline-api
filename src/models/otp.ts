@@ -30,7 +30,7 @@ const otpSchema = new Schema(
   },
 );
 
-async function sendVerificationEmail({
+export async function sendVerificationEmail({
   email,
   otp,
   type,
@@ -44,24 +44,12 @@ async function sendVerificationEmail({
         otp,
       }),
     });
-    console.log('Email sent successfully: ', mailResponse);
+
+    return mailResponse;
   } catch (error) {
     console.log('Error occurred while sending email: ', error);
-    throw error;
+    return false;
   }
 }
-
-otpSchema.pre('save', async function (next) {
-  console.log('New document saved to the database');
-  // Only send an email when a new document is created
-  if (this.isNew)
-    await sendVerificationEmail({
-      email: this.email,
-      otp: this.otp,
-      type: this.type,
-    });
-
-  next();
-});
 
 export default model('OTP', otpSchema);
