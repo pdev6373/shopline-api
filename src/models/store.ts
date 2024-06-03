@@ -13,6 +13,11 @@ const storeSchema = new Schema(
       required: true,
       trim: true,
     },
+    logo: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     products: {
       type: String,
       required: true,
