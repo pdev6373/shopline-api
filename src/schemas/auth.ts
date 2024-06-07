@@ -1,51 +1,63 @@
-import { z } from 'zod';
-
-enum UserRoles {
-  Admin = 'Admin',
-  User = 'User',
-  Company = 'Company',
-}
+import { object, string, nativeEnum } from 'zod';
 
 enum OTPTypes {
   'Verify Account' = 'Verify Account',
   'Password Reset' = 'Password Reset',
 }
 
-const registration = z.object({
-  firstname: z.string(),
-  lastname: z.string(),
-  email: z.string().email(),
-  password: z.string().min(8),
-  role: z.nativeEnum(UserRoles).optional(),
+enum AccountTypes {
+  User = 'User',
+  Store = 'Store',
+}
+
+const userRegistration = object({
+  firstname: string(),
+  lastname: string(),
+  email: string().email(),
+  password: string().min(8),
 });
 
-const verifyEmail = z.object({
-  otp: z.string(),
-  email: z.string().min(8),
+const storeRegistration = object({
+  name: string(),
+  logo: string(),
+  email: string().email(),
+  password: string().min(8),
+  category: string(),
 });
 
-const resendVerificationCode = z.object({
-  email: z.string().min(8),
-  type: z.nativeEnum(OTPTypes),
+const verifyEmail = object({
+  otp: string(),
+  email: string().min(8),
+  type: nativeEnum(AccountTypes),
 });
 
-const forgotPassword = z.object({
-  email: z.string().min(8),
+const resendVerificationCode = object({
+  email: string().min(8),
+  otpType: nativeEnum(OTPTypes),
+  type: nativeEnum(AccountTypes),
 });
 
-const newPassword = z.object({
-  email: z.string().min(8),
-  password: z.string(),
-  otp: z.string(),
+const forgotPassword = object({
+  email: string().min(8),
+  type: nativeEnum(AccountTypes),
 });
 
-const login = z.object({
-  email: z.string(),
-  password: z.string().min(8),
+const newPassword = object({
+  email: string().min(8),
+  password: string(),
+  otp: string(),
+  type: nativeEnum(AccountTypes),
+});
+
+const login = object({
+  email: string(),
+  password: string().min(8),
+  type: nativeEnum(AccountTypes),
 });
 
 export default {
-  registration,
+  userRegistration,
+  storeRegistration,
   forgotPassword,
   verifyEmail,
   resendVerificationCode,

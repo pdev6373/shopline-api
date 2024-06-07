@@ -1,4 +1,4 @@
-import { OTP, User } from '@src/models';
+import { OTP, Store, User } from '@src/models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { compare, hash } from 'bcrypt';
@@ -6,21 +6,16 @@ import { generate } from 'otp-generator';
 import { sign, verify } from 'jsonwebtoken';
 import { sendVerificationEmail } from '@src/models/otp';
 
-type GenerateOTPType = {
-  email: string;
-  type?: 'Verify Account' | 'Password Reset';
-};
-
 const otpOptions = {
   upperCaseAlphabets: false,
   lowerCaseAlphabets: false,
   specialChars: false,
 };
 
-const generateOTP = async ({
-  email,
-  type = 'Verify Account',
-}: GenerateOTPType) => {
+const generateOTP = async (
+  email: string,
+  type: 'Verify Account' | 'Password Reset' = 'Verify Account',
+) => {
   let otp = generate(6, otpOptions);
   let result = await OTP.findOne({ otp });
 
@@ -54,81 +49,76 @@ const generateOTP = async ({
 
 // REGISTER
 const register = async (req: Request, res: Response) => {
-  const { firstname, lastname, email, password } = req.body;
+  const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).exec();
+  const isUser = req.originalUrl.includes('/auth/user/register');
 
-  if (user) {
-    if (user.isVerified)
+  let account: any;
+  if (isUser) account = await User.findOne({ email }).exec();
+  else account = await Store.findOne({ email }).exec();
+
+  if (account) {
+    if (account.isVerified)
       return res
         .status(StatusCodes.CONFLICT)
         .json({ success: false, message: 'Account already exist' });
 
-    user.firstname = firstname;
-    user.lastname = lastname;
-    user.password = await hash(password, Number(process.env.SALT));
-
-    const updatedUser = await user.save();
-
-    if (updatedUser) {
-      const generatedOTP = await generateOTP({
-        email,
-      });
-
-      if (generatedOTP)
-        return res.json({
-          success: true,
-          message: `A verification code was sent to ${email}`,
-        });
-
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
+    if (isUser) {
+      account.firstname = req.body.firstname;
+      account.lastname = req.body.lastname;
+    } else {
+      account.name = req.body.name;
+      account.logo = req.body.logo;
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
-  }
+    account.password = await hash(password, Number(process.env.SALT));
 
-  const hashedPassword = await hash(password, Number(process.env.SALT));
-  const registeredUser = await User.create({
-    ...req.body,
-    password: hashedPassword,
-  });
+    await account.save();
+    await generateOTP(email);
 
-  if (!registeredUser)
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
-
-  const generatedOTP = await generateOTP({
-    email,
-  });
-
-  if (generatedOTP)
     return res.json({
       success: true,
       message: `A verification code was sent to ${email}`,
     });
+  }
 
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
+  const hashedPassword = await hash(password, Number(process.env.SALT));
+
+  if (isUser)
+    await User.create({
+      ...req.body,
+      password: hashedPassword,
+    });
+  else
+    await Store.create({
+      ...req.body,
+      password: hashedPassword,
+    });
+
+  await generateOTP(email);
+
+  return res.json({
+    success: true,
+    message: `A verification code was sent to ${email}`,
+  });
 };
 
-// Verify Email
+// VERIFY EMAIL
 const verifyEmail = async (req: Request, res: Response) => {
-  const { email, otp } = req.body;
+  const { email, otp, type } = req.body;
 
-  const user = await User.findOne({ email }).exec();
+  const isUser = type === 'User';
 
-  if (!user)
+  let account;
+  if (isUser) account = await User.findOne({ email }).exec();
+  else account = await Store.findOne({ email }).exec();
+
+  if (!account)
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account does not exist' });
 
-  if (user.isVerified)
+  if (account.isVerified)
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account already verified' });
@@ -155,89 +145,78 @@ const verifyEmail = async (req: Request, res: Response) => {
       message: 'Invalid OTP',
     });
 
-  user.isVerified = true;
-  const savedUser = await user.save();
+  account.isVerified = true;
 
-  if (savedUser) {
-    await OTP.deleteMany({ email });
+  await account.save();
+  await OTP.deleteMany({ email });
 
-    return res.json({
-      success: true,
-      message: `User "${email}" Account verified successfully`,
-    });
-  }
-
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
+  return res.json({
+    success: true,
+    message: 'Account verified successfully',
+  });
 };
 
-// Resend Verification Code
+// RESEND VERIFICATION CODE
 const resendVerificationCode = async (req: Request, res: Response) => {
-  const { email, type } = req.body;
+  const { email, otpType, type } = req.body;
 
-  const user = await User.findOne({ email }).exec();
+  const isUser = type === 'User';
 
-  if (!user)
+  let account;
+
+  if (isUser) account = await User.findOne({ email }).exec();
+  else account = await Store.findOne({ email }).exec();
+
+  if (!account)
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account does not exist' });
 
-  if (type === 'Verify Account' && user.isVerified)
+  if (otpType === 'Verify Account' && account.isVerified)
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account already verified' });
 
-  const generatedOTP = await generateOTP({
-    email,
-    type,
+  await generateOTP(email, otpType);
+
+  return res.json({
+    success: true,
+    message: `A verification code was resent to ${email}`,
   });
-
-  if (generatedOTP)
-    return res.json({
-      success: true,
-      message: `A verification code was resent to ${email}`,
-    });
-
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
-// Forgot Password
+// FORGOT PASSWORD
 const forgotPassword = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { email, type } = req.body;
 
-  const user = await User.findOne({ email }).exec();
-  if (!user)
+  const isUser = type === 'User';
+
+  let account;
+
+  if (isUser) account = await User.findOne({ email }).exec();
+  else account = await Store.findOne({ email }).exec();
+
+  if (!account)
     return res
       .status(400)
       .json({ success: false, message: 'Account does not exist' });
 
-  if (!user.isVerified)
+  if (!account.isVerified)
     return res
       .status(401)
       .json({ success: false, message: 'Account not verified' });
 
-  const generatedOTP = await generateOTP({
-    email,
-    type: 'Password Reset',
+  await generateOTP(email, 'Password Reset');
+
+  return res.json({
+    success: true,
+    message: `A reset code was resent to ${email}`,
   });
-
-  if (generatedOTP)
-    return res.json({
-      success: true,
-      message: `A reset code was resent to ${email}`,
-    });
-
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
 };
 
-// New Password
+// NEW PASSWORD
 const newPassword = async (req: Request, res: Response) => {
-  const { password, otp, email } = req.body;
+  const { password, otp, email, type } = req.body;
 
   const foundOTP = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
 
@@ -261,53 +240,57 @@ const newPassword = async (req: Request, res: Response) => {
       message: 'Invalid OTP',
     });
 
-  const user = await User.findOne({ email }).exec();
+  const isUser = type === 'User';
 
-  if (!user)
+  let account;
+
+  if (isUser) account = await User.findOne({ email }).exec();
+  else account = await Store.findOne({ email }).exec();
+
+  if (!account)
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account does not exist' });
 
-  if (!user.isVerified)
+  if (!account.isVerified)
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Account not verified' });
 
-  user.password = await hash(password, Number(process.env.SALT));
+  account.password = await hash(password, Number(process.env.SALT));
 
-  const savedUser = await user.save();
+  await account.save();
 
-  if (savedUser) {
-    await OTP.deleteMany({ email });
+  await OTP.deleteMany({ email });
 
-    return res.json({
-      success: true,
-      message: 'Password changed successfully',
-    });
-  }
-
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: StatusCodes.INTERNAL_SERVER_ERROR });
+  return res.json({
+    success: true,
+    message: 'Password changed successfully',
+  });
 };
 
-// Login
+// LOGIN
 const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password, type } = req.body;
 
-  const user = await User.findOne({ email }).exec();
+  const isUser = type === 'User';
 
-  if (!user)
+  let account;
+
+  if (isUser) account = await User.findOne({ email }).exec();
+  else account = await Store.findOne({ email }).exec();
+
+  if (!account)
     return res
       .status(400)
       .json({ success: false, message: 'Account does not exist' });
 
-  if (!user.isVerified)
+  if (!account.isVerified)
     return res
       .status(401)
       .json({ success: false, message: 'Account not verified' });
 
-  const match = await compare(password, user.password);
+  const match = await compare(password, account.password);
 
   if (!match)
     return res
@@ -316,19 +299,19 @@ const login = async (req: Request, res: Response) => {
 
   const accessToken = sign(
     {
-      UserInfo: { email: user.email },
+      UserInfo: { email: account.email, type },
     },
     process.env.ACCESS_TOKEN_SECRET!,
     { expiresIn: '15m' },
   );
 
   const refreshToken = sign(
-    { email: user.email },
+    { email: account.email, type },
     process.env.REFRESH_TOKEN_SECRET!,
     { expiresIn: '7d' },
   );
 
-  const { password: userPassword, ...userDetails } = user.toObject();
+  const { password: userPassword, ...userDetails } = account.toObject();
 
   return res
     .cookie('jwt', refreshToken, {
@@ -344,36 +327,52 @@ const login = async (req: Request, res: Response) => {
     });
 };
 
-// Refresh
+// REFRESH
 const refresh = async (req: Request, res: Response) => {
   const cookies = req.cookies;
 
   if (!cookies?.jwt)
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ success: false, message: 'Unauthorized' });
 
   const refreshToken = cookies.jwt;
 
   const decoded: any = verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
 
   if (!decoded)
-    return res.status(403).json({ success: false, message: 'Forbidden' });
-
-  const user = await User.findOne({ email: decoded.email })
-    .select('-password')
-    .lean()
-    .exec();
-
-  if (!user)
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-
-  if (!user.isVerified)
     return res
-      .status(401)
+      .status(StatusCodes.FORBIDDEN)
+      .json({ success: false, message: 'Forbidden' });
+
+  const isUser = decoded.type === 'User';
+
+  let account;
+
+  if (isUser)
+    account = await User.findOne({ email: decoded.email })
+      .select('-password')
+      .lean()
+      .exec();
+  else
+    account = await Store.findOne({ email: decoded.email })
+      .select('-password')
+      .lean()
+      .exec();
+
+  if (!account)
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ success: false, message: 'Unauthorized' });
+
+  if (!account.isVerified)
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
       .json({ success: false, message: 'Account not verified' });
 
   const accessToken = sign(
     {
-      UserInfo: { email: user.email },
+      UserInfo: { email: account.email, type: decoded.type },
     },
     process.env.ACCESS_TOKEN_SECRET!,
     { expiresIn: '15m' },
@@ -382,11 +381,11 @@ const refresh = async (req: Request, res: Response) => {
   return res.json({
     success: true,
     message: 'New access token generated',
-    data: { accessToken, userDetails: user },
+    data: { accessToken, userDetails: account },
   });
 };
 
-// Logout
+// LOGOUT
 const logout = async (req: Request, res: Response) => {
   const cookies = req.cookies;
 
@@ -403,8 +402,8 @@ const logout = async (req: Request, res: Response) => {
 
 export default {
   register,
-  resendVerificationCode,
   verifyEmail,
+  resendVerificationCode,
   forgotPassword,
   newPassword,
   login,

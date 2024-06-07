@@ -12,6 +12,34 @@ const storeSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    about: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    shipment: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    rating: {
+      // rating
     },
     logo: {
       type: String,
