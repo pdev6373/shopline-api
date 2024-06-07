@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authorizeRoles, isAuthenticated } from '@src/middlewares';
+import { isAuthenticated } from '@src/middlewares';
 import notificationRoutes from './notification';
 import { authRoutes } from './auth';
 import { faqRoutes } from './faq';

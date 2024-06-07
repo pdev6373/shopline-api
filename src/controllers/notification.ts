@@ -2,7 +2,6 @@ import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
 import { Notification, NotificationCategory } from '@src/models';
 import { INotification } from '@src/models/notification';
 import { INotificationCategory } from '@src/models/notificationCategory';
-import { IUser } from '@src/models/user';
 import { Response } from 'express';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
