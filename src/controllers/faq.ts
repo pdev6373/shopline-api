@@ -9,8 +9,8 @@ const getFaqs = async (req: Request, res: Response) => {
     {
       $group: {
         _id: {
-          categoryName: '$categoryName',
-          categoryDescription: '$categoryDescription',
+          name: '$name',
+          description: '$description',
         },
         faqs: {
           $push: {
@@ -24,8 +24,8 @@ const getFaqs = async (req: Request, res: Response) => {
     {
       $project: {
         _id: 0,
-        categoryName: '$_id.categoryName',
-        categoryDescription: '$_id.categoryDescription',
+        name: '$_id.name',
+        description: '$_id.description',
         faqs: 1,
       },
     },

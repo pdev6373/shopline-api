@@ -6,9 +6,17 @@ import { Request, Response } from 'express';
 const createFaqCategory = async (req: Request, res: Response) => {
   const { name, description } = req.body;
 
+  const existingFaqCategory = await FAQCategory.findOne({ name });
+
+  if (existingFaqCategory)
+    return res.status(400).json({
+      success: false,
+      message: 'FAW category with this name already exists',
+    });
+
   const newFaqCategory: IFAQCategory = new FAQCategory({
-    categoryName: name,
-    categoryDescription: description,
+    name,
+    description,
   });
 
   await newFaqCategory.save();
@@ -29,8 +37,8 @@ const updateFaqCategory = async (req: Request, res: Response) => {
       .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'FAQ category not found' });
 
-  faqCategory.categoryName = name;
-  faqCategory.categoryDescription = description;
+  faqCategory.name = name;
+  faqCategory.description = description;
 
   await faqCategory.save();
 

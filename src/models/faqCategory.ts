@@ -1,19 +1,19 @@
 import { model, Schema, Document } from 'mongoose';
 
 export interface IFAQCategory extends Document {
-  categoryName: string;
-  categoryDescription: string;
+  name: string;
+  description: string;
 }
 
 const faqCategorySchema = new Schema<IFAQCategory>(
   {
-    categoryName: {
+    name: {
       type: String,
       required: true,
       unique: true,
       trim: true,
     },
-    categoryDescription: {
+    description: {
       type: String,
       required: true,
       trim: true,

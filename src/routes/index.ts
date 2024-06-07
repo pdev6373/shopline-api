@@ -1,27 +1,24 @@
 import { Router } from 'express';
-import { verifyJWT } from '@src/middlewares';
-import { authRoutes, faqRoutes, privacyPolicyRoutes } from './public';
-import {
-  faqCategoryRoutes,
-  privacyPolicyRoutes as adminPrivacyPolicyRoutes,
-} from './admin';
+import { authorizeRoles, isAuthenticated } from '@src/middlewares';
+import notificationRoutes from './notification';
+import { authRoutes } from './auth';
+import { faqRoutes } from './faq';
+import { privacyPolicyRoutes } from './privacyPolicy';
+import { faqCategoryRoutes } from './faqCategory';
+import { notificationCategoryRoutes } from './notificationCategory';
 
 const routes = () => {
   const router = Router();
 
-  // PUBLIC
   router.use('/auth', authRoutes());
   router.use('/faq', faqRoutes());
   router.use('/privacy-policy', privacyPolicyRoutes());
 
-  // USER
-  router.use(verifyJWT);
+  router.use(isAuthenticated);
 
-  // STORE
-
-  // ADMIN
   router.use('/admin/faq-category', faqCategoryRoutes());
-  router.use('/admin/privacy-policy', adminPrivacyPolicyRoutes());
+  router.use('/admin/notification-category', notificationCategoryRoutes());
+  router.use('/notification', notificationRoutes());
 
   return router;
 };

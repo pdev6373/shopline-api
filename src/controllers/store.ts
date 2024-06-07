@@ -124,7 +124,8 @@ const newEmail = async (req: Request, res: Response) => {};
 const deleteStore = async (req: Request, res: Response) => {
   const storeId: string = req.params.id;
 
-  const deletedStore: IStore | null = await Store.findByIdAndDelete(storeId);
+  // const deletedStore: IStore | null = await Store.findByIdAndDelete(storeId);
+  const deletedStore = await Store.findByIdAndDelete(storeId);
 
   if (!deletedStore)
     return res

@@ -299,14 +299,14 @@ const login = async (req: Request, res: Response) => {
 
   const accessToken = sign(
     {
-      UserInfo: { email: account.email, type },
+      UserInfo: { _id: account._id, type },
     },
     process.env.ACCESS_TOKEN_SECRET!,
     { expiresIn: '15m' },
   );
 
   const refreshToken = sign(
-    { email: account.email, type },
+    { _id: account._id, type },
     process.env.REFRESH_TOKEN_SECRET!,
     { expiresIn: '7d' },
   );
@@ -350,12 +350,12 @@ const refresh = async (req: Request, res: Response) => {
   let account;
 
   if (isUser)
-    account = await User.findOne({ email: decoded.email })
+    account = await User.findById(decoded._id)
       .select('-password')
       .lean()
       .exec();
   else
-    account = await Store.findOne({ email: decoded.email })
+    account = await Store.findById(decoded._id)
       .select('-password')
       .lean()
       .exec();
@@ -372,7 +372,7 @@ const refresh = async (req: Request, res: Response) => {
 
   const accessToken = sign(
     {
-      UserInfo: { email: account.email, type: decoded.type },
+      UserInfo: { _id: account._id, type: decoded.type },
     },
     process.env.ACCESS_TOKEN_SECRET!,
     { expiresIn: '15m' },

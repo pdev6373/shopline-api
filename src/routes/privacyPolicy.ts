@@ -1,10 +1,19 @@
 import { Router } from 'express';
 import { privacyPolicyController } from '@src/controllers';
-import { validateData } from '@src/middlewares';
+import {
+  authorizeRoles,
+  isAuthenticated,
+  validateData,
+} from '@src/middlewares';
 import { privacyPolicySchema } from '@src/schemas';
 
 export const privacyPolicyRoutes = () => {
   const router = Router();
+
+  router.get('/', privacyPolicyController.getPrivacyPolicy);
+
+  router.use(isAuthenticated);
+  router.use(authorizeRoles('Admin'));
 
   router
     .route('/')
