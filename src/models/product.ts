@@ -9,8 +9,8 @@ export interface IProduct extends Document {
   description: string;
   quantity: number;
   numberAvailable: number;
-  reviews: IReview[];
-  discussions: IDiscussion[];
+  reviewIds: IReview[];
+  discussionIds: IDiscussion[];
 }
 
 const productSchema = new Schema<IProduct>(
@@ -43,14 +43,14 @@ const productSchema = new Schema<IProduct>(
       required: true,
       default: 0,
     },
-    reviews: [
+    reviewIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Review',
         required: true,
       },
     ],
-    discussions: [
+    discussionIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Discussion',

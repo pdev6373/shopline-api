@@ -15,11 +15,11 @@ export interface IUser extends Document {
   phoneNumber?: string;
   isVerified: boolean;
   membership: 'Regular' | 'Silver' | 'Gold';
-  searchHistory?: ISearchHistory[];
-  addresses?: IAddress[];
-  socialMedia: ISocialMedia[];
-  cart: ICart;
-  bankAccounts: IBankAccount[];
+  searchHistoryIds?: ISearchHistory[];
+  addressIds?: IAddress[];
+  socialMediaIds: ISocialMedia[];
+  cartId: ICart;
+  bankAccountIds: IBankAccount[];
   //
   accountDetails?: Types.ObjectId;
   pushNotifications: Types.ObjectId[];
@@ -67,29 +67,29 @@ const userSchema = new Schema<IUser>(
       enum: ['Regular', 'Silver', 'Gold'],
       default: 'Regular',
     },
-    searchHistory: [
+    searchHistoryIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'SearchHistory',
       },
     ],
-    addresses: [
+    addressIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Address',
       },
     ],
-    socialMedia: [
+    socialMediaIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'SocialMedia',
       },
     ],
-    cart: {
+    cartId: {
       type: Schema.Types.ObjectId,
       ref: 'Cart',
     },
-    bankAccounts: [
+    bankAccountIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'BankAccount',

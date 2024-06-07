@@ -2,7 +2,7 @@ import { model, Schema, Document, Types } from 'mongoose';
 import { IUser } from './user';
 
 export interface IReview extends Document {
-  userID: IUser;
+  userId: IUser;
   productId: Types.ObjectId;
   rating: number;
   comment?: string;
@@ -11,7 +11,7 @@ export interface IReview extends Document {
 // Define the schema for the Review model
 const reviewSchema = new Schema<IReview>(
   {
-    userID: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,

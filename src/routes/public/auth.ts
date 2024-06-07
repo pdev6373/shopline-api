@@ -4,7 +4,7 @@ import { rateLimiter, validateData } from '@src/middlewares';
 import { authSchema } from '@src/schemas';
 import { StatusCodes } from 'http-status-codes';
 
-const authRoutes = () => {
+export const authRoutes = () => {
   const router = Router();
 
   router.post(
@@ -63,5 +63,3 @@ const authRoutes = () => {
 
   return router;
 };
-
-export default authRoutes;

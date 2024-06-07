@@ -6,7 +6,7 @@ export interface IDiscussion extends Document {
   userId: IUser;
   productId: IProduct;
   content: string;
-  replies: Types.ObjectId[];
+  replyIds: Types.ObjectId[];
 }
 
 const discussionSchema = new Schema<IDiscussion>(
@@ -25,7 +25,7 @@ const discussionSchema = new Schema<IDiscussion>(
       type: String,
       required: true,
     },
-    replies: [
+    replyIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'DiscussionReply',

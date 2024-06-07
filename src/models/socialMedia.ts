@@ -10,6 +10,11 @@ export interface ISocialMedia extends Document {
 
 const socialMediaSchema = new Schema<ISocialMedia>(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     platform: {
       type: String,
       required: true,
@@ -20,11 +25,6 @@ const socialMediaSchema = new Schema<ISocialMedia>(
     },
     userSocialId: {
       type: String,
-      required: true,
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
       required: true,
     },
   },

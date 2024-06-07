@@ -1,4 +1,4 @@
-import { OTP, Store } from '@src/models';
+import { Store } from '@src/models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { compare, hash } from 'bcrypt';
@@ -15,9 +15,9 @@ const getStores = async (req: Request, res: Response) => {
 
 // GET STORE
 const getStore = async (req: Request, res: Response) => {
-  const { id } = req.body;
+  const storeId: string = req.params.id;
 
-  const store = await Store.findOne({ _id: id }).select('-password').lean();
+  const store = await Store.findById(storeId).select('-password').lean();
 
   if (!store)
     return res
@@ -122,16 +122,14 @@ const newEmail = async (req: Request, res: Response) => {};
 
 // DELETE STORE
 const deleteStore = async (req: Request, res: Response) => {
-  const { id } = req.body;
+  const storeId: string = req.params.id;
 
-  const store = await Store.findById(id).exec();
+  const deletedStore: IStore | null = await Store.findByIdAndDelete(storeId);
 
-  if (!store)
+  if (!deletedStore)
     return res
-      .status(400)
-      .json({ success: false, message: 'Store does not exist' });
-
-  await store.deleteOne();
+      .status(StatusCodes.NOT_FOUND)
+      .json({ success: false, message: 'Store not found' });
 
   return res.json({
     success: true,

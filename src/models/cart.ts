@@ -5,7 +5,7 @@ import { IProduct } from './product';
 export interface ICart extends Document {
   userId: IUser;
   storeName: string;
-  products: IProduct[];
+  productIds: IProduct[];
 }
 
 const cartSchema = new Schema<ICart>(
@@ -19,7 +19,7 @@ const cartSchema = new Schema<ICart>(
       type: String,
       required: true,
     },
-    products: [
+    productIds: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Product',
