@@ -5,3 +5,4 @@ export { default as privacyPolicyController } from './privacyPolicy';
 export { default as faqCategoryController } from './faqCategory';
 export { default as notificationController } from './notification';
 export { default as notificationCategoryController } from './notificationCategory';
+export { default as transactionController } from './transaction';

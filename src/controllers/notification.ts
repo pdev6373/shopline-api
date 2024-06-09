@@ -3,7 +3,7 @@ import { Notification, NotificationCategory } from '@src/models';
 import { INotification } from '@src/models/notification';
 import { INotificationCategory } from '@src/models/notificationCategory';
 import { Response } from 'express';
-import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 interface INotificationOverview {
   name: string;
@@ -52,10 +52,11 @@ const getNotificationOverview = async (
   req: AuthenticatedRequest,
   res: Response,
 ) => {
-  const id = req.user?._id;
-
   const categories = await NotificationCategory.find({
-    $or: [{ isUserSpecific: false }, { isUserSpecific: true, userId: id }],
+    $or: [
+      { isUserSpecific: false },
+      { isUserSpecific: true, userId: req.user?._id },
+    ],
   }).populate('notifications unreadNotifications');
 
   const overview: INotificationOverview[] = await Promise.all(
@@ -88,13 +89,6 @@ const getNotificationsInCategoryForUser = async (
   res: Response,
 ) => {
   const id = req.params.id;
-  const userId = req.user?._id;
-
-  if (!userId)
-    return res.status(StatusCodes.FORBIDDEN).json({
-      success: false,
-      message: ReasonPhrases.FORBIDDEN,
-    });
 
   const category = await NotificationCategory.findById(id);
 
@@ -105,7 +99,7 @@ const getNotificationsInCategoryForUser = async (
 
   const notifications = await Notification.find({
     categoryId: id,
-    $or: [{ user: userId }, { user: null }],
+    $or: [{ userId: req.user?._id }, { user: null }],
   });
 
   return res.json({ success: true, data: notifications });
@@ -126,7 +120,7 @@ const markNotificationAsRead = async (
 
   if (
     notification.userId &&
-    notification.userId.toString() !== req.user!._id.toString()
+    notification.userId.toString() !== req.user?._id.toString()
   )
     return res.status(StatusCodes.FORBIDDEN).json({
       success: false,
@@ -152,15 +146,8 @@ const markAllUserUnreadNotificationsAsRead = async (
   req: AuthenticatedRequest,
   res: Response,
 ) => {
-  const id = req.user?._id;
-
-  if (!id)
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ success: false, message: ReasonPhrases.UNAUTHORIZED });
-
   const unreadNotifications = await Notification.find({
-    userId: id,
+    userId: req.user?._id,
     isRead: false,
   });
 

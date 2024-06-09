@@ -1,5 +1,6 @@
 import { IUser } from '@src/models/user';
 import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 type role = 'User' | 'Store' | 'Admin';
 
@@ -13,7 +14,7 @@ export interface AuthenticatedRequest extends Request {
 export const authorizeRoles = (...roles: role[]) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (!req.user || !roles?.includes(req.user.role))
-      return res.status(403).send({ error: 'Access denied' });
+      return res.status(StatusCodes.FORBIDDEN).send({ error: 'Access denied' });
 
     return next();
   };

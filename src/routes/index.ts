@@ -6,6 +6,7 @@ import { faqRoutes } from './faq';
 import { privacyPolicyRoutes } from './privacyPolicy';
 import { faqCategoryRoutes } from './faqCategory';
 import { notificationCategoryRoutes } from './notificationCategory';
+import { transactionRoutes } from './transaction';
 
 const routes = () => {
   const router = Router();
@@ -19,6 +20,7 @@ const routes = () => {
   router.use('/admin/faq-category', faqCategoryRoutes());
   router.use('/admin/notification-category', notificationCategoryRoutes());
   router.use('/notification', notificationRoutes());
+  router.use('/transaction', transactionRoutes());
 
   return router;
 };
