@@ -7,7 +7,7 @@ export interface INotification extends Document {
   message: string;
   categoryId: INotificationCategory;
   isRead: boolean;
-  userId?: IUser;
+  userId: IUser;
   createdAt: Date;
   updatedAt: Date;
 }

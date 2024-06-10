@@ -9,9 +9,9 @@ const createFaqCategory = async (req: Request, res: Response) => {
   const existingFaqCategory = await FAQCategory.findOne({ name });
 
   if (existingFaqCategory)
-    return res.status(400).json({
+    return res.status(StatusCodes.UNAUTHORIZED).json({
       success: false,
-      message: 'FAW category with this name already exists',
+      message: 'FAQ category with this name already exists',
     });
 
   const newFaqCategory: IFAQCategory = new FAQCategory({
@@ -36,6 +36,16 @@ const updateFaqCategory = async (req: Request, res: Response) => {
     return res
       .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'FAQ category not found' });
+
+  const existingFaqCategory = await FAQCategory.findOne({
+    name,
+    _id: { $ne: id },
+  });
+
+  if (existingFaqCategory)
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ success: false, message: 'FAQ Category name already taken' });
 
   faqCategory.name = name;
   faqCategory.description = description;

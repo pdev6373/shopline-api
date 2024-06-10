@@ -5,23 +5,30 @@ import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 const getTransactions = async (req: AuthenticatedRequest, res: Response) => {
-  const transactions = await Transaction.find({ userId: req.user?._id });
+  const transactions: ITransaction[] | null = await Transaction.find({
+    userId: req.user?._id,
+  });
   return res.json({ success: true, data: transactions });
 };
 
 const getTransaction = async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
-  const transaction = await Transaction.findOne({
+  const transaction: ITransaction | null = await Transaction.findOne({
     _id: id,
-    userId: req.user?._id,
+    user: req.user?._id,
   });
 
   if (!transaction)
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       message: 'Transaction not found or unauthorized',
     });
+
+  if (!transaction.isRead) {
+    transaction.isRead = true;
+    await transaction.save();
+  }
 
   return res.json({ success: true, data: transaction });
 };
@@ -49,7 +56,7 @@ const updateTransactionStatus = async (
 ) => {
   const { id, status } = req.body;
 
-  const transaction = await Transaction.findOne({
+  const transaction: ITransaction | null = await Transaction.findOne({
     _id: id,
     userId: req.user?._id,
   });

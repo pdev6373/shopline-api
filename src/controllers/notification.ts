@@ -24,22 +24,17 @@ const createNotification = async (req: AuthenticatedRequest, res: Response) => {
 
   if (!category)
     return res
-      .status(404)
+      .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'Notification category not found' });
 
   const notification: INotification = new Notification({
     title,
     message,
     categoryId: category._id,
-    userId: category.isUserSpecific ? req.user?._id : undefined,
+    userId: req.user?._id,
   });
 
   await notification.save();
-
-  category.notificationIds.push(notification);
-  category.unreadNotificationIds.push(notification);
-
-  await category.save();
 
   return res.status(StatusCodes.CREATED).json({
     success: true,
@@ -52,18 +47,18 @@ const getNotificationOverview = async (
   req: AuthenticatedRequest,
   res: Response,
 ) => {
-  const categories = await NotificationCategory.find({
-    $or: [
-      { isUserSpecific: false },
-      { isUserSpecific: true, userId: req.user?._id },
-    ],
-  }).populate('notifications unreadNotifications');
+  const categories = await NotificationCategory.find();
 
   const overview: INotificationOverview[] = await Promise.all(
     categories.map(async (category: INotificationCategory) => {
       const lastNotification = await Notification.findOne({
         category: category._id,
       }).sort({ createdAt: -1 });
+
+      const unReadNotifications = await Notification.find({
+        category: category._id,
+        isRead: false,
+      }).lean();
 
       return {
         name: category.name,
@@ -76,7 +71,7 @@ const getNotificationOverview = async (
               createdAt: lastNotification.createdAt,
             }
           : null,
-        unreadCount: category.unreadNotificationIds.length,
+        unreadCount: unReadNotifications?.length,
       };
     }),
   );
@@ -94,73 +89,28 @@ const getNotificationsInCategoryForUser = async (
 
   if (!category)
     return res
-      .status(404)
+      .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'Notification category not found' });
 
-  const notifications = await Notification.find({
-    categoryId: id,
-    $or: [{ userId: req.user?._id }, { user: null }],
-  });
-
-  return res.json({ success: true, data: notifications });
-};
-
-const markNotificationAsRead = async (
-  req: AuthenticatedRequest,
-  res: Response,
-) => {
-  const { id } = req.params;
-
-  const notification: INotification | null = await Notification.findById(id);
-
-  if (!notification)
-    return res
-      .status(404)
-      .json({ success: false, message: 'Notification not found' });
-
-  if (
-    notification.userId &&
-    notification.userId.toString() !== req.user?._id.toString()
-  )
-    return res.status(StatusCodes.FORBIDDEN).json({
-      success: false,
-      message: 'You do not have permission to mark this notification as read',
-    });
-
-  notification.isRead = true;
-  await notification.save();
-
-  await NotificationCategory.updateOne(
-    { _id: notification.categoryId },
-    { $pull: { unreadNotifications: notification._id } },
+  const updatedNotifications = await Notification.updateMany(
+    { categoryId: id, userId: req.user?._id, isRead: false },
+    { $set: { isRead: true } },
+    { new: true },
   );
 
-  return res.json({
-    success: true,
-    message: 'Notification marked as read',
-    data: notification,
-  });
+  return res.json({ success: true, data: updatedNotifications });
 };
 
-const markAllUserUnreadNotificationsAsRead = async (
+const markAllUnreadNotificationsInACategoryAsRead = async (
   req: AuthenticatedRequest,
   res: Response,
 ) => {
-  const unreadNotifications = await Notification.find({
-    userId: req.user?._id,
-    isRead: false,
-  });
+  const id = req.params.id;
 
-  await Promise.all(
-    unreadNotifications.map(async (notification) => {
-      notification.isRead = true;
-      await notification.save();
-
-      await NotificationCategory.updateOne(
-        { _id: notification.categoryId },
-        { $pull: { unreadNotificationIds: notification._id } },
-      );
-    }),
+  await Notification.updateMany(
+    { categoryId: id, userId: req.user?._id, isRead: false },
+    { $set: { isRead: true } },
+    { new: true },
   );
 
   return res.json({
@@ -172,7 +122,6 @@ const markAllUserUnreadNotificationsAsRead = async (
 export default {
   createNotification,
   getNotificationOverview,
-  markNotificationAsRead,
-  markAllUserUnreadNotificationsAsRead,
+  markAllUnreadNotificationsInACategoryAsRead,
   getNotificationsInCategoryForUser,
 };

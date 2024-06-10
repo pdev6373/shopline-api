@@ -22,13 +22,8 @@ const notificationRoutes = () => {
     notificationController.getNotificationsInCategoryForUser,
   );
   router.put(
-    '/mark-as-read/:id',
-    validateData(notificationSchema.markNotificationAsRead),
-    notificationController.markNotificationAsRead,
-  );
-  router.put(
     '/mark-all-as-read',
-    notificationController.markAllUserUnreadNotificationsAsRead,
+    notificationController.markAllUnreadNotificationsInACategoryAsRead,
   );
 
   return router;

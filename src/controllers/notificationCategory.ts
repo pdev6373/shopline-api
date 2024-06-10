@@ -9,7 +9,7 @@ const getNotificationCategories = async (req: Request, res: Response) => {
 };
 
 const createNotificationCategory = async (req: Request, res: Response) => {
-  const { name, description, icon, isUserSpecific } = req.body;
+  const { name, description, icon } = req.body;
 
   const existingCategory = await NotificationCategory.findOne({
     name,
@@ -25,7 +25,6 @@ const createNotificationCategory = async (req: Request, res: Response) => {
     name,
     description,
     icon,
-    isUserSpecific,
   });
 
   await newCategory.save();
@@ -38,7 +37,7 @@ const createNotificationCategory = async (req: Request, res: Response) => {
 };
 
 const updateNotificationCategory = async (req: Request, res: Response) => {
-  const { id, name, description, icon, isUserSpecific } = req.body;
+  const { id, name, description, icon } = req.body;
 
   const category = await NotificationCategory.findById(id);
 
@@ -47,10 +46,19 @@ const updateNotificationCategory = async (req: Request, res: Response) => {
       .status(404)
       .json({ success: false, message: 'Notification category not found' });
 
+  const existingCategory = await NotificationCategory.findOne({
+    name,
+    _id: { $ne: id },
+  });
+
+  if (existingCategory)
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ success: false, message: 'Category Name already taken' });
+
   category.name = name;
   category.description = description;
   category.icon = icon;
-  category.isUserSpecific = isUserSpecific;
 
   await category.save();
 

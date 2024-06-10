@@ -7,6 +7,7 @@ export interface ITransaction extends Document {
   transactionType: 'Debit' | 'Credit';
   status: 'Pending' | 'Completed' | 'Failed';
   description?: string;
+  isRead: boolean;
 }
 
 const transactionSchema = new Schema<ITransaction>(
@@ -33,6 +34,10 @@ const transactionSchema = new Schema<ITransaction>(
     },
     description: {
       type: String,
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
     },
   },
   {

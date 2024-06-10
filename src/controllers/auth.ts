@@ -1,6 +1,6 @@
 import { OTP, Store, User } from '@src/models';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { compare, hash } from 'bcrypt';
 import { generate } from 'otp-generator';
 import { sign, verify } from 'jsonwebtoken';
@@ -334,7 +334,7 @@ const refresh = async (req: Request, res: Response) => {
   if (!cookies?.jwt)
     return res
       .status(StatusCodes.UNAUTHORIZED)
-      .json({ success: false, message: 'Unauthorized' });
+      .json({ success: false, message: ReasonPhrases.UNAUTHORIZED });
 
   const refreshToken = cookies.jwt;
 
@@ -363,7 +363,7 @@ const refresh = async (req: Request, res: Response) => {
   if (!account)
     return res
       .status(StatusCodes.UNAUTHORIZED)
-      .json({ success: false, message: 'Unauthorized' });
+      .json({ success: false, message: ReasonPhrases.UNAUTHORIZED });
 
   if (!account.isVerified)
     return res

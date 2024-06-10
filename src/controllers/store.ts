@@ -49,11 +49,12 @@ const updateStore = async (req: Request, res: Response) => {
   if (name !== store.email) {
     const duplicate = await Store.findOne({
       name,
+      _id: { $ne: id },
     })
       .lean()
       .exec();
 
-    if (duplicate && duplicate._id !== id)
+    if (duplicate)
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ success: false, message: 'Name already taken' });

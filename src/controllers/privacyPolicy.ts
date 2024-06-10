@@ -42,7 +42,7 @@ const updatePrivacyPolicy = async (req: Request, res: Response) => {
 
   if (!privacyPolicy)
     return res
-      .status(404)
+      .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'Privacy policy not found' });
 
   privacyPolicy.content = content;

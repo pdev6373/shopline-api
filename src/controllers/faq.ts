@@ -60,8 +60,16 @@ const getFaq = async (req: Request, res: Response) => {
 };
 
 // ADD FAQ
-const createFaq = async (req: Request, res: Response): Promise<void> => {
+const createFaq = async (req: Request, res: Response) => {
   const { categoryId, question, answer } = req.body;
+
+  const existingFaq: IFAQ | null = await FAQ.findOne({ question, categoryId });
+
+  if (existingFaq)
+    return res.status(StatusCodes.UNAUTHORIZED).json({
+      success: false,
+      message: 'FAQ already exist',
+    });
 
   const newFaq: IFAQ = new FAQ({
     categoryId,
@@ -71,7 +79,7 @@ const createFaq = async (req: Request, res: Response): Promise<void> => {
 
   await newFaq.save();
 
-  res.status(StatusCodes.CREATED).json({
+  return res.status(StatusCodes.CREATED).json({
     success: true,
     data: newFaq,
   });
@@ -87,6 +95,16 @@ const updateFaq = async (req: Request, res: Response) => {
     return res
       .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'FAQ not found' });
+
+  const existingFAQ = await FAQ.findOne({
+    question,
+    categoryId: faq.categoryId,
+  });
+
+  if (existingFAQ)
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ success: false, message: 'FAQ already exist' });
 
   faq.question = question;
   faq.answer = answer;
