@@ -3,11 +3,6 @@ import { INotificationCategory } from '@src/models/notificationCategory';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-const getNotificationCategories = async (req: Request, res: Response) => {
-  const categories = await NotificationCategory.find();
-  res.json({ success: true, data: categories });
-};
-
 const createNotificationCategory = async (req: Request, res: Response) => {
   const { name, description, icon } = req.body;
 
@@ -77,7 +72,6 @@ const deleteNotificationCategory = async (req: Request, res: Response) => {
   }
 
   await Notification.deleteMany({ categoryId: id });
-
   await NotificationCategory.deleteOne({ _id: id });
 
   return res.json({
@@ -87,7 +81,6 @@ const deleteNotificationCategory = async (req: Request, res: Response) => {
 };
 
 export default {
-  getNotificationCategories,
   createNotificationCategory,
   updateNotificationCategory,
   deleteNotificationCategory,

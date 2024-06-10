@@ -6,3 +6,5 @@ export { default as faqCategoryController } from './faqCategory';
 export { default as notificationController } from './notification';
 export { default as notificationCategoryController } from './notificationCategory';
 export { default as transactionController } from './transaction';
+export { default as transactionCategoryController } from './transactionCategory';
+export { default as socialMediaCategoryController } from './socialMediaCategory';

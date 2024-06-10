@@ -1,8 +1,10 @@
 import { model, Schema, Document } from 'mongoose';
 import { IUser } from './user';
+import { ITransactionCategory } from './transactionCategory';
 
 export interface ITransaction extends Document {
   userId: IUser;
+  categoryId: ITransactionCategory;
   amount: number;
   transactionType: 'Debit' | 'Credit';
   status: 'Pending' | 'Completed' | 'Failed';
@@ -15,6 +17,11 @@ const transactionSchema = new Schema<ITransaction>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
+    },
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: 'TransactionCategory',
       required: true,
     },
     amount: {

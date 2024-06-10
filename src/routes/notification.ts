@@ -16,6 +16,7 @@ const notificationRoutes = () => {
   router.use(authorizeRoles('User', 'Store'));
 
   router.get('/', notificationController.getNotificationOverview);
+  router.get('/categories', notificationController.getNotificationCategories);
   router.get(
     '/:categoryId',
     validateData(notificationSchema.getNotificationsInCategoryForUser),

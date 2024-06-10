@@ -1,5 +1,5 @@
 import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
-import { Transaction } from '@src/models';
+import { Transaction, TransactionCategory } from '@src/models';
 import { ITransaction } from '@src/models/transaction';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -8,7 +8,16 @@ const getTransactions = async (req: AuthenticatedRequest, res: Response) => {
   const transactions: ITransaction[] | null = await Transaction.find({
     userId: req.user?._id,
   });
+
   return res.json({ success: true, data: transactions });
+};
+
+const getTransactiontionCategories = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  const categories = await TransactionCategory.find();
+  return res.json({ success: true, data: categories });
 };
 
 const getTransaction = async (req: AuthenticatedRequest, res: Response) => {
@@ -34,7 +43,14 @@ const getTransaction = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const createTransaction = async (req: AuthenticatedRequest, res: Response) => {
-  const { amount, transactionType, description } = req.body;
+  const { amount, transactionType, description, categoryId } = req.body;
+
+  const category = await TransactionCategory.findById(categoryId);
+
+  if (!category)
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ success: false, message: 'Transaction category not found' });
 
   const newTransaction: ITransaction = new Transaction({
     userId: req.user?._id,
@@ -73,9 +89,52 @@ const updateTransactionStatus = async (
   return res.json({ success: true, data: updatedTransaction });
 };
 
+const getTransactionsInCategoryForUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  const id = req.params.id;
+
+  const category = await TransactionCategory.findById(id);
+
+  if (!category)
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ success: false, message: 'Transaction category not found' });
+
+  const updatedTransactions = await Transaction.updateMany(
+    { categoryId: id, userId: req.user?._id, isRead: false },
+    { $set: { isRead: true } },
+    { new: true },
+  );
+
+  return res.json({ success: true, data: updatedTransactions });
+};
+
+const markAllUnreadTransactionsInACategoryAsRead = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  const id = req.params.id;
+
+  await Transaction.updateMany(
+    { categoryId: id, userId: req.user?._id, isRead: false },
+    { $set: { isRead: true } },
+    { new: true },
+  );
+
+  return res.json({
+    success: true,
+    message: 'All unread transactions marked as read',
+  });
+};
+
 export default {
   getTransactions,
   getTransaction,
+  getTransactiontionCategories,
   createTransaction,
   updateTransactionStatus,
+  getTransactionsInCategoryForUser,
+  markAllUnreadTransactionsInACategoryAsRead,
 };

@@ -3,7 +3,7 @@ import { object, string } from 'zod';
 const updateStore = object({
   id: string(),
   name: string(),
-  logo: string().email(),
+  logo: string(),
 });
 
 const changePassword = object({

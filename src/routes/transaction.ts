@@ -25,6 +25,7 @@ export const transactionRoutes = () => {
       transactionController.updateTransactionStatus,
     );
 
+  router.get('/categories', transactionController.getTransactiontionCategories);
   router.get(
     '/:id',
     validateData(transactionSchema.getTransaction),

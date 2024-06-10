@@ -1,12 +1,10 @@
 import { Router } from 'express';
 import { faqCategoryController } from '@src/controllers';
-import { authorizeRoles, validateData } from '@src/middlewares';
+import { validateData } from '@src/middlewares';
 import { faqCategorySchema } from '@src/schemas';
 
 export const faqCategoryRoutes = () => {
   const router = Router();
-
-  router.use(authorizeRoles('Admin'));
 
   router
     .route('/')

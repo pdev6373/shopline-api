@@ -2,7 +2,7 @@ import { object, string } from 'zod';
 
 const createAndUpdatePrivacyPolicy = object({
   content: string(),
-  answer: string().email(),
+  answer: string(),
 });
 
 export default {

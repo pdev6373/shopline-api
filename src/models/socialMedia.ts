@@ -1,11 +1,13 @@
 import { model, Schema, Document } from 'mongoose';
 import { IUser } from './user';
+import { ISocialMediaCategory } from './socialMediaCategory';
 
 export interface ISocialMedia extends Document {
   platform: string;
   username: string;
   userSocialId: string;
   userId: IUser;
+  categoryId: ISocialMediaCategory;
 }
 
 const socialMediaSchema = new Schema<ISocialMedia>(
@@ -13,6 +15,11 @@ const socialMediaSchema = new Schema<ISocialMedia>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
+    },
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: 'SocialMediaCategory',
       required: true,
     },
     platform: {

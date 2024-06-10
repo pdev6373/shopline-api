@@ -38,9 +38,16 @@ const createNotification = async (req: AuthenticatedRequest, res: Response) => {
 
   return res.status(StatusCodes.CREATED).json({
     success: true,
-    message: 'Notification created',
     data: notification,
   });
+};
+
+const getNotificationCategories = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  const categories = await NotificationCategory.find();
+  return res.json({ success: true, data: categories });
 };
 
 const getNotificationOverview = async (
@@ -124,4 +131,5 @@ export default {
   getNotificationOverview,
   markAllUnreadNotificationsInACategoryAsRead,
   getNotificationsInCategoryForUser,
+  getNotificationCategories,
 };

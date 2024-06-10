@@ -1,4 +1,4 @@
-import { FAQ } from '@src/models';
+import { FAQ, FAQCategory } from '@src/models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { IFAQ } from '@src/models/faq';
@@ -57,6 +57,11 @@ const getFaq = async (req: Request, res: Response) => {
     success: true,
     data: faq,
   });
+};
+
+const getFaqCategories = async (req: Request, res: Response) => {
+  const categories = await FAQCategory.find();
+  return res.json({ success: true, data: categories });
 };
 
 // ADD FAQ
@@ -134,6 +139,7 @@ const deleteFaq = async (req: Request, res: Response) => {
 export default {
   getFaqs,
   getFaq,
+  getFaqCategories,
   createFaq,
   updateFaq,
   deleteFaq,

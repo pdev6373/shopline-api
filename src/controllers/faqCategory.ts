@@ -72,4 +72,8 @@ const deleteFaqCategory = async (req: Request, res: Response) => {
   return res.json({ success: true, message: 'FAQ category deleted' });
 };
 
-export default { createFaqCategory, updateFaqCategory, deleteFaqCategory };
+export default {
+  createFaqCategory,
+  updateFaqCategory,
+  deleteFaqCategory,
+};

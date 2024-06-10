@@ -7,3 +7,6 @@ export { default as PrivacyPolicy } from './privacyPolicy';
 export { default as Notification } from './notification';
 export { default as NotificationCategory } from './notificationCategory';
 export { default as Transaction } from './transaction';
+export { default as TransactionCategory } from './transactionCategory';
+export { default as SocialMediaCategory } from './socialMediaCategory';
+export { default as SocialMedia } from './socialMedia';
