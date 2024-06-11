@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { authorizeRoles, isAuthenticated } from '@src/middlewares';
-import notificationRoutes from './notification';
 import { authRoutes } from './auth';
 import { faqRoutes } from './faq';
 import { privacyPolicyRoutes } from './privacyPolicy';
@@ -8,6 +7,8 @@ import { faqCategoryRoutes } from './faqCategory';
 import { notificationCategoryRoutes } from './notificationCategory';
 import { transactionRoutes } from './transaction';
 import { socialMediaCategoryRoutes } from './socialMediaCategory';
+import { notificationRoutes } from './notification';
+import { socialMediaRoutes } from './socialMedia';
 
 const routes = () => {
   const router = Router();
@@ -20,6 +21,7 @@ const routes = () => {
 
   router.use('/notification', notificationRoutes());
   router.use('/transaction', transactionRoutes());
+  router.use('/socialmedia', socialMediaRoutes());
 
   router.use(authorizeRoles('Admin'));
   router.use('/admin/faq-category', faqCategoryRoutes());

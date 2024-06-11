@@ -8,3 +8,4 @@ export { default as notificationCategoryController } from './notificationCategor
 export { default as transactionController } from './transaction';
 export { default as transactionCategoryController } from './transactionCategory';
 export { default as socialMediaCategoryController } from './socialMediaCategory';
+export { default as socialMediaController } from './socialMedia';

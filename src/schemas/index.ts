@@ -8,3 +8,4 @@ export { default as notificationCategorySchema } from './notificationCategory';
 export { default as transactionSchema } from './transaction';
 export { default as transactionCategorySchema } from './transactionCategory';
 export { default as socialMediaCategorySchema } from './socialMediaCategory';
+export { default as socialMediaSchema } from './socialMedia';

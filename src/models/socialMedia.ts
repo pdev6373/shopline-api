@@ -3,7 +3,6 @@ import { IUser } from './user';
 import { ISocialMediaCategory } from './socialMediaCategory';
 
 export interface ISocialMedia extends Document {
-  platform: string;
   username: string;
   userSocialId: string;
   userId: IUser;
@@ -20,10 +19,6 @@ const socialMediaSchema = new Schema<ISocialMedia>(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: 'SocialMediaCategory',
-      required: true,
-    },
-    platform: {
-      type: String,
       required: true,
     },
     username: {

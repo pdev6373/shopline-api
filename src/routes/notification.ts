@@ -3,7 +3,7 @@ import { notificationController } from '@src/controllers';
 import { authorizeRoles, validateData } from '@src/middlewares';
 import { notificationSchema } from '@src/schemas';
 
-const notificationRoutes = () => {
+export const notificationRoutes = () => {
   const router = Router();
 
   router.post(
@@ -29,5 +29,3 @@ const notificationRoutes = () => {
 
   return router;
 };
-
-export default notificationRoutes;
