@@ -26,6 +26,13 @@ export const notificationRoutes = () => {
     '/mark-all-as-read',
     notificationController.markAllUnreadNotificationsInACategoryAsRead,
   );
+  router.put(
+    '/status',
+    validateData(
+      notificationSchema.updateNotificationCategoryPushNotificationStatus,
+    ),
+    notificationController.updateNotificationCategoryPushNotificationStatus,
+  );
 
   return router;
 };

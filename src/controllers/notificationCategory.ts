@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 const createNotificationCategory = async (req: Request, res: Response) => {
-  const { name, description, icon } = req.body;
+  const { name, description, icon, hasPushNotification } = req.body;
 
   const existingCategory = await NotificationCategory.findOne({
     name,
@@ -20,6 +20,7 @@ const createNotificationCategory = async (req: Request, res: Response) => {
     name,
     description,
     icon,
+    hasPushNotification: hasPushNotification || false,
   });
 
   await newCategory.save();
@@ -32,7 +33,7 @@ const createNotificationCategory = async (req: Request, res: Response) => {
 };
 
 const updateNotificationCategory = async (req: Request, res: Response) => {
-  const { id, name, description, icon } = req.body;
+  const { id, name, description, icon, hasPushNotification } = req.body;
 
   const category = await NotificationCategory.findById(id);
 
@@ -54,6 +55,7 @@ const updateNotificationCategory = async (req: Request, res: Response) => {
   category.name = name;
   category.description = description;
   category.icon = icon;
+  if (hasPushNotification) category.hasPushNotification = hasPushNotification;
 
   await category.save();
 

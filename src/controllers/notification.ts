@@ -46,7 +46,13 @@ const getNotificationCategories = async (
   req: AuthenticatedRequest,
   res: Response,
 ) => {
-  const categories = await NotificationCategory.find();
+  const { hasPushNotification } = req.query;
+
+  let filter: { hasPushNotification?: boolean } = {};
+  if (hasPushNotification !== undefined)
+    filter.hasPushNotification = hasPushNotification === 'true';
+
+  const categories = await NotificationCategory.find(filter);
   return res.json({ success: true, data: categories });
 };
 
@@ -126,10 +132,41 @@ const markAllUnreadNotificationsInACategoryAsRead = async (
   });
 };
 
+const updateNotificationCategoryPushNotificationStatus = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  const { categoryId, hasPushNotification } = req.body;
+
+  const category = await NotificationCategory.findById(categoryId);
+
+  if (!category)
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: 'Notification category not found' });
+
+  if (hasPushNotification) {
+    if (!category.disabledPushNotificationUserIds.includes(req.user!._id))
+      category.disabledPushNotificationUserIds.push(req.user!._id);
+  } else
+    category.disabledPushNotificationUserIds =
+      category.disabledPushNotificationUserIds.filter(
+        (id) => id.toString() !== req.user!._id.toString(),
+      );
+
+  await category.save();
+
+  return res.json({
+    success: true,
+    message: 'Push notification status updated',
+  });
+};
+
 export default {
   createNotification,
   getNotificationOverview,
   markAllUnreadNotificationsInACategoryAsRead,
   getNotificationsInCategoryForUser,
   getNotificationCategories,
+  updateNotificationCategoryPushNotificationStatus,
 };

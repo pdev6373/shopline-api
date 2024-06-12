@@ -1,9 +1,10 @@
-import { object, string } from 'zod';
+import { boolean, object, string } from 'zod';
 
 const createNotificationCategory = object({
   name: string(),
   description: string(),
   icon: string(),
+  hasPushNotification: boolean().optional(),
 });
 
 const updateNotificationCategory = object({
@@ -11,6 +12,7 @@ const updateNotificationCategory = object({
   name: string(),
   description: string(),
   icon: string(),
+  hasPushNotification: boolean().optional(),
 });
 
 const deleteNotificationCategory = object({
