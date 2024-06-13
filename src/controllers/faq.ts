@@ -1,7 +1,6 @@
 import { FAQ, FAQCategory } from '@src/models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { IFAQ } from '@src/models/faq';
 
 // GET FAQS
 const getFaqs = async (req: Request, res: Response) => {
@@ -46,7 +45,7 @@ const getFaqs = async (req: Request, res: Response) => {
 const getFaq = async (req: Request, res: Response) => {
   const id: string = req.params.id;
 
-  const faq: IFAQ | null = await FAQ.findById(id).lean();
+  const faq = await FAQ.findById(id).lean();
 
   if (!faq)
     return res
@@ -68,7 +67,7 @@ const getFaqCategories = async (req: Request, res: Response) => {
 const createFaq = async (req: Request, res: Response) => {
   const { categoryId, question, answer } = req.body;
 
-  const existingFaq: IFAQ | null = await FAQ.findOne({ question, categoryId });
+  const existingFaq = await FAQ.findOne({ question, categoryId });
 
   if (existingFaq)
     return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -76,7 +75,7 @@ const createFaq = async (req: Request, res: Response) => {
       message: 'FAQ already exist',
     });
 
-  const newFaq: IFAQ = new FAQ({
+  const newFaq = new FAQ({
     categoryId,
     question,
     answer,
@@ -94,7 +93,7 @@ const createFaq = async (req: Request, res: Response) => {
 const updateFaq = async (req: Request, res: Response) => {
   const { id, question, answer } = req.body;
 
-  let faq: IFAQ | null = await FAQ.findById(id);
+  let faq = await FAQ.findById(id);
 
   if (!faq)
     return res
@@ -126,7 +125,7 @@ const updateFaq = async (req: Request, res: Response) => {
 const deleteFaq = async (req: Request, res: Response) => {
   const id: string = req.params.id;
 
-  const deletedFAQ: IFAQ | null = await FAQ.findByIdAndDelete(id);
+  const deletedFAQ = await FAQ.findByIdAndDelete(id);
 
   if (!deletedFAQ)
     return res

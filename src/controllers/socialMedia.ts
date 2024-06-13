@@ -1,7 +1,6 @@
 import { SocialMedia, SocialMediaCategory } from '@src/models';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ISocialMedia } from '@src/models/socialMedia';
 import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
 
 const getSocialMedias = async (req: AuthenticatedRequest, res: Response) => {
@@ -47,8 +46,7 @@ const getSocialMedias = async (req: AuthenticatedRequest, res: Response) => {
 const getSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
   const id: string = req.params.id;
 
-  const socialMedia: ISocialMedia | null =
-    await SocialMedia.findById(id).lean();
+  const socialMedia = await SocialMedia.findById(id).lean();
 
   if (!socialMedia)
     return res
@@ -72,7 +70,7 @@ const getSocialMediaCategories = async (
 const createSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
   const { username, userSocialId, categoryId } = req.body;
 
-  const existingSocialMedia: ISocialMedia | null = await SocialMedia.findOne({
+  const existingSocialMedia = await SocialMedia.findOne({
     categoryId,
   });
 
@@ -82,7 +80,7 @@ const createSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
       message: 'Social media already exist',
     });
 
-  const newSocialMedia: ISocialMedia = new SocialMedia({
+  const newSocialMedia = new SocialMedia({
     username,
     userSocialId,
     userId: req.user?._id,
@@ -100,7 +98,7 @@ const createSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
 const updateSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
   const { id, username, userSocialId, categoryId } = req.body;
 
-  let socialMedia: ISocialMedia | null = await SocialMedia.findById(id);
+  let socialMedia = await SocialMedia.findById(id);
 
   if (!socialMedia)
     return res
@@ -133,8 +131,7 @@ const updateSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
 const deleteSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
   const id: string = req.params.id;
 
-  const deletedSocialMedia: ISocialMedia | null =
-    await SocialMedia.findByIdAndDelete(id);
+  const deletedSocialMedia = await SocialMedia.findByIdAndDelete(id);
 
   if (!deletedSocialMedia)
     return res

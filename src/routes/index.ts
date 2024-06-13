@@ -9,6 +9,7 @@ import { transactionRoutes } from './transaction';
 import { socialMediaCategoryRoutes } from './socialMediaCategory';
 import { notificationRoutes } from './notification';
 import { socialMediaRoutes } from './socialMedia';
+import { wishlistRoutes } from './wishlist';
 
 const routes = () => {
   const router = Router();
@@ -22,6 +23,7 @@ const routes = () => {
   router.use('/notification', notificationRoutes());
   router.use('/transaction', transactionRoutes());
   router.use('/socialmedia', socialMediaRoutes());
+  router.use('/wishlist', wishlistRoutes());
 
   router.use(authorizeRoles('Admin'));
   router.use('/admin/faq-category', faqCategoryRoutes());

@@ -1,21 +1,7 @@
 import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
 import { Notification, NotificationCategory } from '@src/models';
-import { INotification } from '@src/models/notification';
-import { INotificationCategory } from '@src/models/notificationCategory';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-interface INotificationOverview {
-  name: string;
-  description?: string;
-  icon?: string;
-  lastNotification: {
-    title: string;
-    message: string;
-    createdAt: Date;
-  } | null;
-  unreadCount: number;
-}
 
 const createNotification = async (req: AuthenticatedRequest, res: Response) => {
   const { title, message, categoryId } = req.body;
@@ -27,7 +13,7 @@ const createNotification = async (req: AuthenticatedRequest, res: Response) => {
       .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'Notification category not found' });
 
-  const notification: INotification = new Notification({
+  const notification = new Notification({
     title,
     message,
     categoryId: category._id,
@@ -62,8 +48,8 @@ const getNotificationOverview = async (
 ) => {
   const categories = await NotificationCategory.find();
 
-  const overview: INotificationOverview[] = await Promise.all(
-    categories.map(async (category: INotificationCategory) => {
+  const overview = await Promise.all(
+    categories.map(async (category) => {
       const lastNotification = await Notification.findOne({
         category: category._id,
       }).sort({ createdAt: -1 });

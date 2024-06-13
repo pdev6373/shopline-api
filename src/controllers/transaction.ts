@@ -1,11 +1,10 @@
 import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
 import { Transaction, TransactionCategory } from '@src/models';
-import { ITransaction } from '@src/models/transaction';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 const getTransactions = async (req: AuthenticatedRequest, res: Response) => {
-  const transactions: ITransaction[] | null = await Transaction.find({
+  const transactions = await Transaction.find({
     userId: req.user?._id,
   });
 
@@ -23,7 +22,7 @@ const getTransactiontionCategories = async (
 const getTransaction = async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
-  const transaction: ITransaction | null = await Transaction.findOne({
+  const transaction = await Transaction.findOne({
     _id: id,
     user: req.user?._id,
   });
@@ -52,7 +51,7 @@ const createTransaction = async (req: AuthenticatedRequest, res: Response) => {
       .status(StatusCodes.NOT_FOUND)
       .json({ success: false, message: 'Transaction category not found' });
 
-  const newTransaction: ITransaction = new Transaction({
+  const newTransaction = new Transaction({
     userId: req.user?._id,
     amount,
     transactionType,
@@ -72,7 +71,7 @@ const updateTransactionStatus = async (
 ) => {
   const { id, status } = req.body;
 
-  const transaction: ITransaction | null = await Transaction.findOne({
+  const transaction = await Transaction.findOne({
     _id: id,
     userId: req.user?._id,
   });

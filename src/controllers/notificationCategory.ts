@@ -1,5 +1,4 @@
 import { Notification, NotificationCategory } from '@src/models';
-import { INotificationCategory } from '@src/models/notificationCategory';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -16,7 +15,7 @@ const createNotificationCategory = async (req: Request, res: Response) => {
       message: 'Notification category with this name already exists',
     });
 
-  const newCategory: INotificationCategory = new NotificationCategory({
+  const newCategory = new NotificationCategory({
     name,
     description,
     icon,

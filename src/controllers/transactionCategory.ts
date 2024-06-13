@@ -1,5 +1,4 @@
 import { Transaction, TransactionCategory } from '@src/models';
-import { ITransactionCategory } from '@src/models/transactionCategory';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -16,7 +15,7 @@ const createTransactionCategory = async (req: Request, res: Response) => {
       message: 'Transaction category with this name already exists',
     });
 
-  const newCategory: ITransactionCategory = new TransactionCategory({
+  const newCategory = new TransactionCategory({
     name,
     description,
     icon,

@@ -1,12 +1,10 @@
 import { PrivacyPolicy } from '@src/models';
-import { IPrivacyPolicy } from '@src/models/privacyPolicy';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 // GET PRIVACY POLICY
 export const getPrivacyPolicy = async (req: Request, res: Response) => {
-  const privacyPolicy: IPrivacyPolicy | null =
-    await PrivacyPolicy.findOne().sort({ createdAt: -1 });
+  const privacyPolicy = await PrivacyPolicy.findOne().sort({ createdAt: -1 });
 
   if (!privacyPolicy)
     return res
@@ -20,7 +18,7 @@ export const getPrivacyPolicy = async (req: Request, res: Response) => {
 const createPrivacyPolicy = async (req: Request, res: Response) => {
   const { content, version } = req.body;
 
-  const newPrivacyPolicy: IPrivacyPolicy = new PrivacyPolicy({
+  const newPrivacyPolicy = new PrivacyPolicy({
     content,
     version,
   });
@@ -37,8 +35,7 @@ const createPrivacyPolicy = async (req: Request, res: Response) => {
 const updatePrivacyPolicy = async (req: Request, res: Response) => {
   const { content, version } = req.body;
 
-  const privacyPolicy: IPrivacyPolicy | null =
-    await PrivacyPolicy.findOne().sort({ createdAt: -1 });
+  const privacyPolicy = await PrivacyPolicy.findOne().sort({ createdAt: -1 });
 
   if (!privacyPolicy)
     return res
@@ -58,8 +55,7 @@ const updatePrivacyPolicy = async (req: Request, res: Response) => {
 
 // DELETE PRIVACY POLICY
 const deletePrivacyPolicy = async (req: Request, res: Response) => {
-  const privacyPolicy: IPrivacyPolicy | null =
-    await PrivacyPolicy.findOne().sort({ createdAt: -1 });
+  const privacyPolicy = await PrivacyPolicy.findOne().sort({ createdAt: -1 });
 
   if (!privacyPolicy)
     return res

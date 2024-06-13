@@ -1,5 +1,4 @@
 import { SocialMedia, SocialMediaCategory } from '@src/models';
-import { ISocialMediaCategory } from '@src/models/socialMediaCategory';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -16,7 +15,7 @@ const createSocialMediaCategory = async (req: Request, res: Response) => {
       message: 'Social media category with this name already exists',
     });
 
-  const newCategory: ISocialMediaCategory = new SocialMediaCategory({
+  const newCategory = new SocialMediaCategory({
     name,
     description,
     icon,

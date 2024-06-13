@@ -10,3 +10,4 @@ export { default as Transaction } from './transaction';
 export { default as TransactionCategory } from './transactionCategory';
 export { default as SocialMediaCategory } from './socialMediaCategory';
 export { default as SocialMedia } from './socialMedia';
+export { default as Wishlist } from './wishlist';

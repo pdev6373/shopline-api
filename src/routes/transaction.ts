@@ -1,16 +1,11 @@
 import { Router } from 'express';
 import { transactionController } from '@src/controllers';
-import {
-  authorizeRoles,
-  isAuthenticated,
-  validateData,
-} from '@src/middlewares';
+import { authorizeRoles, validateData } from '@src/middlewares';
 import { transactionSchema } from '@src/schemas';
 
 export const transactionRoutes = () => {
   const router = Router();
 
-  router.use(isAuthenticated);
   router.use(authorizeRoles('User'));
 
   router

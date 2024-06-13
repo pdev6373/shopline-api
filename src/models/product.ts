@@ -9,54 +9,34 @@ export interface IProduct extends Document {
   description: string;
   quantity: number;
   numberAvailable: number;
+  numberOfPurchases: number;
   reviewIds: IReview[];
   discussionIds: IDiscussion[];
+  // Shouldn't some of them be numbers
+  cashback: boolean;
+  freeShipping: boolean;
+  discount: boolean;
+  wholesalePrice: boolean;
 }
 
 const productSchema = new Schema<IProduct>(
   {
-    images: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    name: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      default: 1,
-    },
-    numberAvailable: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    reviewIds: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Review',
-        required: true,
-      },
-    ],
+    images: [{ type: String, required: true }],
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    description: { type: String, required: true },
+    quantity: { type: Number, required: true, default: 1 },
+    numberAvailable: { type: Number, required: true, default: 0 },
+    numberOfPurchases: { type: Number, required: true, default: 0 },
+    reviewIds: [{ type: Schema.Types.ObjectId, ref: 'Review', required: true }],
     discussionIds: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Discussion',
-        required: true,
-      },
+      { type: Schema.Types.ObjectId, ref: 'Discussion', required: true },
     ],
+    // Shouldn't some of them be numbers
+    cashback: { type: Boolean, default: false },
+    freeShipping: { type: Boolean, default: false },
+    discount: { type: Boolean, default: false },
+    wholesalePrice: { type: Boolean, default: false },
   },
   {
     timestamps: true,

@@ -22,7 +22,6 @@ export interface IUser extends Document {
   bankAccountIds: IBankAccount[];
   //
   accountDetails?: Types.ObjectId;
-  pushNotifications: Types.ObjectId[];
   transactions: Types.ObjectId[];
 }
 
@@ -101,12 +100,6 @@ const userSchema = new Schema<IUser>(
     //   type: Schema.Types.ObjectId,
     //   ref: 'Account',
     // },
-    // pushNotifications: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'PushNotification',
-    //   },
-    // ],
     // transactions: [
     //   {
     //     type: Schema.Types.ObjectId,

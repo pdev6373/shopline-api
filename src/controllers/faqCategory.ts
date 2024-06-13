@@ -1,4 +1,3 @@
-import { IFAQCategory } from '@src/models/faqCategory';
 import { FAQCategory } from '@src/models';
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
@@ -14,7 +13,7 @@ const createFaqCategory = async (req: Request, res: Response) => {
       message: 'FAQ category with this name already exists',
     });
 
-  const newFaqCategory: IFAQCategory = new FAQCategory({
+  const newFaqCategory = new FAQCategory({
     name,
     description,
   });
@@ -30,7 +29,7 @@ const createFaqCategory = async (req: Request, res: Response) => {
 const updateFaqCategory = async (req: Request, res: Response) => {
   const { id, name, description } = req.body;
 
-  let faqCategory: IFAQCategory | null = await FAQCategory.findById(id);
+  let faqCategory = await FAQCategory.findById(id);
 
   if (!faqCategory)
     return res
@@ -61,8 +60,7 @@ const updateFaqCategory = async (req: Request, res: Response) => {
 const deleteFaqCategory = async (req: Request, res: Response) => {
   const id: string = req.params.id;
 
-  const deletedFaqCategory: IFAQCategory | null =
-    await FAQCategory.findByIdAndDelete(id);
+  const deletedFaqCategory = await FAQCategory.findByIdAndDelete(id);
 
   if (!deletedFaqCategory)
     return res
