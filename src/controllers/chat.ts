@@ -70,6 +70,8 @@ const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
     await chat.save();
   }
 
+  // io.to(chatId).emit('receiveMessage', message);
+
   return res.status(StatusCodes.CREATED).json({
     success: true,
     data: message,

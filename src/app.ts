@@ -6,6 +6,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { connection } from 'mongoose';
+import { Server } from 'socket.io';
+import http from 'http';
 import { logging } from './middlewares';
 import { corsOptions, connectDatabase } from './configs';
 import routes from './routes';
@@ -28,6 +30,14 @@ app.use(cookieParser());
 app.use(helmet());
 app.use('/api/v1', routes());
 
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // Adjust according to your frontend origin
+    methods: ['GET', 'POST'],
+  },
+});
+
 app.all('*', (req: Request, res: Response) => {
   res
     .status(StatusCodes.NOT_FOUND)
@@ -40,9 +50,9 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 connection.once('open', () => {
-  app.listen(PORT, () =>
-    console.log(`[server]: Server is running on port: ${PORT}`),
-  );
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
 
 connection.on('error', (err) => console.error(err));
