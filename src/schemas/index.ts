@@ -10,3 +10,4 @@ export { default as transactionCategorySchema } from './transactionCategory';
 export { default as socialMediaCategorySchema } from './socialMediaCategory';
 export { default as socialMediaSchema } from './socialMedia';
 export { default as wishlistSchema } from './wishlist';
+export { default as chatSchema } from './chat';

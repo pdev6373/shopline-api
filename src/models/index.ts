@@ -11,3 +11,5 @@ export { default as TransactionCategory } from './transactionCategory';
 export { default as SocialMediaCategory } from './socialMediaCategory';
 export { default as SocialMedia } from './socialMedia';
 export { default as Wishlist } from './wishlist';
+export { default as Chat } from './chat';
+export { default as Message } from './message';

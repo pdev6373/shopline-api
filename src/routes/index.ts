@@ -10,26 +10,30 @@ import { socialMediaCategoryRoutes } from './socialMediaCategory';
 import { notificationRoutes } from './notification';
 import { socialMediaRoutes } from './socialMedia';
 import { wishlistRoutes } from './wishlist';
+import { chatRoutes } from './chat';
+import { messageRoutes } from './message';
 
 const routes = () => {
   const router = Router();
 
   router.use('/auth', authRoutes());
-  router.use('/faq', faqRoutes());
-  router.use('/privacy-policy', privacyPolicyRoutes());
+  router.use('/faqs', faqRoutes());
+  router.use('/privacy-policies', privacyPolicyRoutes());
 
   router.use(isAuthenticated);
 
-  router.use('/notification', notificationRoutes());
-  router.use('/transaction', transactionRoutes());
-  router.use('/socialmedia', socialMediaRoutes());
+  router.use('/notifications', notificationRoutes());
+  router.use('/transactions', transactionRoutes());
+  router.use('/socialmedias', socialMediaRoutes());
   router.use('/wishlist', wishlistRoutes());
+  router.use('/chats', chatRoutes());
+  router.use('/messages', messageRoutes());
 
   router.use(authorizeRoles('Admin'));
-  router.use('/admin/faq-category', faqCategoryRoutes());
-  router.use('/admin/notification-category', notificationCategoryRoutes());
-  router.use('/admin/transaction-category', notificationCategoryRoutes());
-  router.use('/admin/socialmedia-category', socialMediaCategoryRoutes());
+  router.use('/admin/faq-categories', faqCategoryRoutes());
+  router.use('/admin/notification-categories', notificationCategoryRoutes());
+  router.use('/admin/transaction-categories', notificationCategoryRoutes());
+  router.use('/admin/socialmedia-categories', socialMediaCategoryRoutes());
 
   return router;
 };
