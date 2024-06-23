@@ -1,6 +1,6 @@
 import { connect } from 'mongoose';
 
-const databaseConnection = async () => {
+export const databaseConnection = async () => {
   try {
     await connect(process.env.DATABASE_URI!);
   } catch (err) {
@@ -8,4 +8,3 @@ const databaseConnection = async () => {
   }
 };
 
-export default databaseConnection;

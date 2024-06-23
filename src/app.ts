@@ -9,7 +9,7 @@ import { connection } from 'mongoose';
 import { Server } from 'socket.io';
 import http from 'http';
 import { logging } from './middlewares';
-import { corsOptions, connectDatabase } from './configs';
+import { corsOptions, databaseConnection } from './configs';
 import routes from './routes';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
@@ -21,7 +21,7 @@ logging.log('log or success');
 const app: Express = express();
 const PORT = process.env.PORT || 3500;
 
-connectDatabase();
+databaseConnection();
 
 app.use(cors(corsOptions));
 app.use(express.json());

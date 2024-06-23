@@ -27,30 +27,30 @@ const storeRegistration = object({
 
 const verifyEmail = object({
   otp: string(),
-  email: string().min(8),
+  email: string().email(),
   type: nativeEnum(AccountTypes),
 });
 
 const resendVerificationCode = object({
-  email: string().min(8),
+  email: string().email(),
   otpType: nativeEnum(OTPTypes),
   type: nativeEnum(AccountTypes),
 });
 
 const forgotPassword = object({
-  email: string().min(8),
+  email: string().email(),
   type: nativeEnum(AccountTypes),
 });
 
 const newPassword = object({
-  email: string().min(8),
-  password: string(),
+  email: string().email(),
+  password: string().min(8),
   otp: string(),
   type: nativeEnum(AccountTypes),
 });
 
 const login = object({
-  email: string(),
+  email: string().email(),
   password: string().min(8),
   type: nativeEnum(AccountTypes),
 });
