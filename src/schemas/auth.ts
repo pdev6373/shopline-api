@@ -1,66 +1,71 @@
-import { object, string, nativeEnum } from 'zod';
+import { z } from 'zod';
 
 enum OTPTypes {
-  'Verify Account' = 'Verify Account',
-  'Password Reset' = 'Password Reset',
+  'verify-account' = 'verify-account',
+  'reset-password' = 'reset-password',
 }
 
-enum AccountTypes {
-  User = 'User',
-  Store = 'Store',
-}
-
-const userRegistration = object({
-  firstname: string(),
-  lastname: string(),
-  email: string().email(),
-  password: string().min(8),
+const register = z.object({
+  role: z.enum(['customer', 'caregiver', 'admin']),
+  subRoles: z.array(z.string()).nonempty(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  phone: z.string().regex(/^\+[1-9]{1}[0-9]{3,14}$/),
+  password: z.string().min(6),
+  ageGroup: z.string(),
+  organizationName: z.string(),
+  address: z.string(),
+  city: z.string(),
+  zipcode: z.string(),
+  country: z.string(),
 });
 
-const storeRegistration = object({
-  name: string(),
-  logo: string(),
-  email: string().email(),
-  password: string().min(8),
-  category: string(),
+const verify = z.object({
+  otp: z.string(),
+  id: z.string(),
 });
 
-const verifyEmail = object({
-  otp: string(),
-  email: string().min(8),
-  type: nativeEnum(AccountTypes),
+const resendOTP = z.object({
+  id: z.string(),
+  type: z.nativeEnum(OTPTypes),
 });
 
-const resendVerificationCode = object({
-  email: string().min(8),
-  otpType: nativeEnum(OTPTypes),
-  type: nativeEnum(AccountTypes),
+const forgotPassword = z.object({
+  email: z.string().email().optional(),
+  phone: z
+    .string()
+    .regex(/^\+[1-9]{1}[0-9]{3,14}$/)
+    .optional(),
 });
 
-const forgotPassword = object({
-  email: string().min(8),
-  type: nativeEnum(AccountTypes),
+const newPassword = z.object({
+  id: z.string(),
+  password: z.string().min(6),
+  otp: z.string(),
 });
 
-const newPassword = object({
-  email: string().min(8),
-  password: string(),
-  otp: string(),
-  type: nativeEnum(AccountTypes),
-});
-
-const login = object({
-  email: string(),
-  password: string().min(8),
-  type: nativeEnum(AccountTypes),
+const login = z.object({
+  email: z.string().email().optional(),
+  phone: z
+    .string()
+    .regex(/^\+[1-9]{1}[0-9]{3,14}$/)
+    .optional(),
+  password: z.string().min(6),
 });
 
 export default {
-  userRegistration,
-  storeRegistration,
+  register,
+  verify,
+  resendOTP,
   forgotPassword,
-  verifyEmail,
-  resendVerificationCode,
-  newPassword,
   login,
+  newPassword,
 };
+
+export type RegisterInput = z.infer<typeof register>;
+export type VerifyInput = z.infer<typeof verify>;
+export type ResendOTPInput = z.infer<typeof resendOTP>;
+export type ForgotPasswordInput = z.infer<typeof forgotPassword>;
+export type NewPasswordInput = z.infer<typeof newPassword>;
+export type LoginInput = z.infer<typeof login>;

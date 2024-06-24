@@ -2,7 +2,7 @@ import { IUser } from '@src/models/user';
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-type role = 'User' | 'Store' | 'Admin';
+type role = 'customer' | 'caregiver' | 'admin';
 
 export interface AuthenticatedRequest extends Request {
   user?: {

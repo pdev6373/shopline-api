@@ -22,7 +22,7 @@ export const mailSender = async ({
 }: SendVerificationEmailType) => {
   try {
     await transporter.sendMail({
-      from: '"Shopline" <adebayoluborode@gmail.com>',
+      from: `"Danberkidz" <adebayoluborode@gmail.com>`,
       to,
       subject,
       html: body,
@@ -30,7 +30,7 @@ export const mailSender = async ({
 
     return true;
   } catch (error) {
-    console.error('Error occurred while sending email: ', error);
+    console.error('Error occurred while sending otp: ', error);
     return false;
   }
 };

@@ -1,5 +1,5 @@
 type SendEmailType = {
-  type: 'password-reset' | 'verify-account';
+  type: 'reset-password' | 'verify-account';
   otp: string;
 };
 
@@ -432,7 +432,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                           font-family: Lato, sans-serif;
                                         "
                                         >${
-                                          type === 'password-reset'
+                                          type === 'reset-password'
                                             ? 'Password reset'
                                             : 'Verify account'
                                         }
@@ -538,7 +538,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                           line-height: 25.2px;
                                           color: #666666;
                                         "
-                                        >Hello from Shopline,</span
+                                        >Hello from Danberkidz,</span
                                       >
                                     </p>
                                     <p style="font-size: 14px; line-height: 140%">
@@ -552,7 +552,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                           color: #666666;
                                         "
                                         >${
-                                          type === 'password-reset'
+                                          type === 'reset-password'
                                             ? 'We have sent you this email in response to your request to reset your password.'
                                             : "Congratulations on creating an account with us, We're excited to have you on our platform."
                                         }
@@ -571,7 +571,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                         "
                                         >
                                         ${
-                                          type === 'password-reset'
+                                          type === 'reset-password'
                                             ? 'To reset your password, please use the verification code below:'
                                             : 'To verify your account, please use the verification code below:'
                                         }
@@ -672,9 +672,9 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                               line-height: 22.4px;
                                             "
                                             >${
-                                              type === 'password-reset'
+                                              type === 'reset-password'
                                                 ? 'Please ignore this email if you did not request a password change.'
-                                                : 'Please ignore this email if you did not sign up on Shopline.'
+                                                : 'Please ignore this email if you did not sign up on Danberkidz.'
                                             }
                                             </span
                                           ></em
@@ -928,7 +928,7 @@ export const mailContent = ({ type, otp }: SendEmailType) => {
                                               line-height: 19.6px;
                                               font-size: 14px;
                                             "
-                                            >Shopline &copy;&nbsp; All Rights
+                                            >Danberkidz &copy;&nbsp; All Rights
                                             Reserved</span
                                           ></span
                                         ></span

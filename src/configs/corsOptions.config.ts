@@ -1,7 +1,7 @@
 import { CorsOptions } from 'cors';
 import { allowedOrigins } from './';
 
-const corsOptions: CorsOptions = {
+export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) callback(null, true);
     else callback(new Error('Not allowed by CORS'));
@@ -9,5 +9,3 @@ const corsOptions: CorsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
 };
-
-export default corsOptions;

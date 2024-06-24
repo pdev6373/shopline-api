@@ -1,46 +1,40 @@
 import { Router } from 'express';
 import { authController } from '@src/controllers';
-import { rateLimiter, validateData } from '@src/middlewares';
+import {
+  rateLimiter,
+  validateAuthData,
+  validateData,
+  validateSignupData,
+} from '@src/middlewares';
 import { authSchema } from '@src/schemas';
-import { StatusCodes } from 'http-status-codes';
 
 export const authRoutes = () => {
   const router = Router();
 
   router.post(
     '/register',
-    (req, res, next) => {
-      const accountType: string = req.body.type;
-
-      let schema;
-
-      if (accountType === 'User') schema = authSchema.userRegistration;
-      else if (accountType === 'Store') schema = authSchema.storeRegistration;
-      else
-        return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ error: 'Invalid account type' });
-
-      return validateData(schema)(req, res, next);
-    },
+    validateSignupData(authSchema.register),
     authController.register,
   );
 
   router.post(
     '/verify',
-    validateData(authSchema.verifyEmail),
-    authController.verifyEmail,
+    validateData(authSchema.verify),
+    authController.verify,
   );
 
   router.post(
-    '/resend-verification-code',
-    validateData(authSchema.resendVerificationCode),
-    authController.resendVerificationCode,
+    '/resend-otp',
+    validateData(authSchema.resendOTP),
+    rateLimiter({
+      type: 'otp',
+    }),
+    authController.resendOTP,
   );
 
   router.post(
     '/forgot-password',
-    validateData(authSchema.forgotPassword),
+    validateAuthData(authSchema.forgotPassword),
     authController.forgotPassword,
   );
 
@@ -52,13 +46,14 @@ export const authRoutes = () => {
 
   router.post(
     '/login',
-    rateLimiter,
-    validateData(authSchema.login),
+    validateAuthData(authSchema.login),
+    rateLimiter({
+      type: 'login',
+    }),
     authController.login,
   );
 
   router.get('/refresh', authController.refresh);
-
   router.get('/logout', authController.logout);
 
   return router;

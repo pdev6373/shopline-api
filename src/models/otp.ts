@@ -1,28 +1,32 @@
 import { model, Schema } from 'mongoose';
-import { mailContent, mailSender } from '@src/utils';
+import { mailContent, mailSender, smsSender } from '@src/utils';
+import { IUser } from './user';
 
 type SendVerificationEmailType = {
   email: string;
+  phone: string;
   otp: string;
-  type: 'Verify Account' | 'Password Reset';
+  type: 'verify-account' | 'reset-password';
 };
 
-const otpSchema = new Schema(
+export interface IOtp extends Document {
+  userId: IUser;
+  otp: string;
+  type: 'verify-account' | 'reset-password';
+}
+
+const otpSchema = new Schema<IOtp>(
   {
-    email: {
-      type: String,
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      trim: true,
     },
-    otp: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    otp: { type: String, required: true, trim: true },
     type: {
       type: String,
-      enum: ['Verify Account', 'Password Reset'],
-      default: 'Verify Account',
+      enum: ['verify-account', 'reset-password'],
+      default: 'verify-account',
     },
   },
   {
@@ -30,26 +34,25 @@ const otpSchema = new Schema(
   },
 );
 
-export async function sendVerificationEmail({
+export async function sendVerificationOTP({
   email,
+  phone,
   otp,
   type,
 }: SendVerificationEmailType) {
-  try {
-    const mailResponse = await mailSender({
-      to: email,
-      subject: type,
-      body: mailContent({
-        type: type === 'Verify Account' ? 'verify-account' : 'password-reset',
-        otp,
-      }),
+  return mailSender({
+    to: email,
+    subject: type,
+    body: mailContent({ type, otp }),
+  }).then((isMailSent) => {
+    if (!isMailSent) return { isMailSent, isSmsSent: false };
+    return smsSender({
+      message: otp,
+      phone,
+    }).then((isSmsSent) => {
+      return { isMailSent, isSmsSent };
     });
-
-    return mailResponse;
-  } catch (error) {
-    console.log('Error occurred while sending email: ', error);
-    return false;
-  }
+  });
 }
 
-export default model('OTP', otpSchema);
+export default model<IOtp>('OTP', otpSchema);

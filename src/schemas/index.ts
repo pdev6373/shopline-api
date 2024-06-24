@@ -1,13 +1,10 @@
-export { default as authSchema } from './auth';
-export { default as storeSchema } from './store';
-export { default as faqSchema } from './faq';
-export { default as faqCategorySchema } from './faqCategory';
-export { default as privacyPolicySchema } from './privacyPolicy';
-export { default as notificationSchema } from './notification';
-export { default as notificationCategorySchema } from './notificationCategory';
-export { default as transactionSchema } from './transaction';
-export { default as transactionCategorySchema } from './transactionCategory';
-export { default as socialMediaCategorySchema } from './socialMediaCategory';
-export { default as socialMediaSchema } from './socialMedia';
-export { default as wishlistSchema } from './wishlist';
-export { default as chatSchema } from './chat';
+export {
+  default as authSchema,
+  RegisterInput,
+  VerifyInput,
+  ResendOTPInput,
+  ForgotPasswordInput,
+  NewPasswordInput,
+  LoginInput,
+} from './auth';
+export { default as userSchema, UpdateInput } from './user';

@@ -1,13 +1,2 @@
-export { default as storeController } from './store';
 export { default as authController } from './auth';
-export { default as faqController } from './faq';
-export { default as privacyPolicyController } from './privacyPolicy';
-export { default as faqCategoryController } from './faqCategory';
-export { default as notificationController } from './notification';
-export { default as notificationCategoryController } from './notificationCategory';
-export { default as transactionController } from './transaction';
-export { default as transactionCategoryController } from './transactionCategory';
-export { default as socialMediaCategoryController } from './socialMediaCategory';
-export { default as socialMediaController } from './socialMedia';
-export { default as wishlistController } from './wishlist';
-export { default as chatController } from './chat';
+export { default as userController } from './user';
