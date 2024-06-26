@@ -1,5 +1,5 @@
-import { model, Schema, Document } from 'mongoose';
 import { INotificationCategory } from './notificationCategory';
+import { model, Schema, Document } from 'mongoose';
 import { IUser } from './user';
 
 export interface INotification extends Document {
