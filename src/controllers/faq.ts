@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-stsatus-codes';
 import { FAQ, FAQCategory } from '@src/models';
-import { StatusCodes } from 'http-status-codes';
 
 // GET FAQS
 const getFaqs = async (req: Request, res: Response) => {
