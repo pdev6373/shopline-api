@@ -1,5 +1,5 @@
-import { FAQ, FAQCategory } from '@src/models';
 import { Request, Response } from 'express';
+import { FAQ, FAQCategory } from '@src/models';
 import { StatusCodes } from 'http-status-codes';
 
 // GET FAQS
