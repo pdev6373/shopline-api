@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { notificationController } from '@src/controllers';
-import { authorizeRoles, validateData } from '@src/middlewares';
-import { notificationSchema } from '@src/schemas';
+import { notificationController } from '../controllers';
+import { authorizeRoles, validateData } from '../middlewares';
+import { notificationSchema } from '../schemas';
 
 export const notificationRoutes = () => {
   const router = Router();

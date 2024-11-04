@@ -1,11 +1,7 @@
 import { Router } from 'express';
-import { privacyPolicyController } from '@src/controllers';
-import {
-  authorizeRoles,
-  isAuthenticated,
-  validateData,
-} from '@src/middlewares';
-import { privacyPolicySchema } from '@src/schemas';
+import { privacyPolicyController } from '../controllers';
+import { authorizeRoles, isAuthenticated, validateData } from '../middlewares';
+import { privacyPolicySchema } from '../schemas';
 
 export const privacyPolicyRoutes = () => {
   const router = Router();

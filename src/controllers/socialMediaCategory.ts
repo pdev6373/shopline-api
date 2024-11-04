@@ -1,4 +1,4 @@
-import { SocialMedia, SocialMediaCategory } from '@src/models';
+import { SocialMedia, SocialMediaCategory } from '../models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 

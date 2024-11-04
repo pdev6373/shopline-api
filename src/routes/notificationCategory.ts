@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { notificationCategoryController } from '@src/controllers';
-import { validateData } from '@src/middlewares';
-import { notificationCategorySchema } from '@src/schemas';
+import { notificationCategoryController } from '../controllers';
+import { validateData } from '../middlewares';
+import { notificationCategorySchema } from '../schemas';
 
 export const notificationCategoryRoutes = () => {
   const router = Router();

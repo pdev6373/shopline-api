@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { socialMediaCategoryController } from '@src/controllers';
-import { validateData } from '@src/middlewares';
-import { socialMediaCategorySchema } from '@src/schemas';
+import { socialMediaCategoryController } from '../controllers';
+import { validateData } from '../middlewares';
+import { socialMediaCategorySchema } from '../schemas';
 
 export const socialMediaCategoryRoutes = () => {
   const router = Router();

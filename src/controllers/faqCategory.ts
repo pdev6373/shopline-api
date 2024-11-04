@@ -1,4 +1,4 @@
-import { FAQCategory } from '@src/models';
+import { FAQCategory } from '../models';
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 

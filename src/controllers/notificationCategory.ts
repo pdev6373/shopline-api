@@ -1,4 +1,4 @@
-import { Notification, NotificationCategory } from '@src/models';
+import { Notification, NotificationCategory } from '../models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { chatController } from '@src/controllers';
-import { authorizeRoles, validateData } from '@src/middlewares';
-import { chatSchema } from '@src/schemas';
+import { chatController } from '../controllers';
+import { authorizeRoles, validateData } from '../middlewares';
+import { chatSchema } from '../schemas';
 
 export const messageRoutes = () => {
   const router = Router();

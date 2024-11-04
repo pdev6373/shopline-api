@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authController } from '@src/controllers';
-import { rateLimiter, validateData } from '@src/middlewares';
-import { authSchema } from '@src/schemas';
+import { authController } from '../controllers';
+import { rateLimiter, validateData } from '../middlewares';
+import { authSchema } from '../schemas';
 import { StatusCodes } from 'http-status-codes';
 
 /**

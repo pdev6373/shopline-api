@@ -1,4 +1,4 @@
-import { Transaction, TransactionCategory } from '@src/models';
+import { Transaction, TransactionCategory } from '../models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 

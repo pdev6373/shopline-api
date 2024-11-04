@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { storeController } from '@src/controllers';
-import { validateData } from '@src/middlewares';
-import { storeSchema } from '@src/schemas';
+import { storeController } from '../../controllers';
+import { validateData } from '../../middlewares';
+import { storeSchema } from '../../schemas';
 
 const storeRoutes = () => {
   const router = Router();

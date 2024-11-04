@@ -1,10 +1,10 @@
-import { OTP, Store, User } from '@src/models';
+import { OTP, Store, User } from '../models';
 import { Request, Response } from 'express';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { compare, hash } from 'bcrypt';
 import { generate } from 'otp-generator';
 import { sign, verify } from 'jsonwebtoken';
-import { sendVerificationEmail } from '@src/models/otp';
+import { sendVerificationEmail } from '../models/otp';
 
 const otpOptions = {
   upperCaseAlphabets: false,

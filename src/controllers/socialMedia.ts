@@ -1,7 +1,7 @@
-import { SocialMedia, SocialMediaCategory } from '@src/models';
+import { SocialMedia, SocialMediaCategory } from '../models';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
+import { AuthenticatedRequest } from '../middlewares/authorizeRoles';
 
 const getSocialMedias = async (req: AuthenticatedRequest, res: Response) => {
   const socialMediaByCategory = await SocialMedia.aggregate([

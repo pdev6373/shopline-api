@@ -1,4 +1,4 @@
-import { Store } from '@src/models';
+import { Store } from '../models';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { compare, hash } from 'bcrypt';

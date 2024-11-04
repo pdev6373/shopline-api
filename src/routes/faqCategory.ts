@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { faqCategoryController } from '@src/controllers';
-import { validateData } from '@src/middlewares';
-import { faqCategorySchema } from '@src/schemas';
+import { faqCategoryController } from '../controllers';
+import { validateData } from '../middlewares';
+import { faqCategorySchema } from '../schemas';
 
 export const faqCategoryRoutes = () => {
   const router = Router();

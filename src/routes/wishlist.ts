@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { wishlistController } from '@src/controllers';
-import { authorizeRoles, validateData } from '@src/middlewares';
-import { wishlistSchema } from '@src/schemas';
+import { wishlistController } from '../controllers';
+import { authorizeRoles, validateData } from '../middlewares';
+import { wishlistSchema } from '../schemas';
 
 export const wishlistRoutes = () => {
   const router = Router();

@@ -1,5 +1,5 @@
-import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
-import { Transaction, TransactionCategory } from '@src/models';
+import { AuthenticatedRequest } from '../middlewares/authorizeRoles';
+import { Transaction, TransactionCategory } from '../models';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 

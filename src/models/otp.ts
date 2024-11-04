@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { mailContent, mailSender } from '@src/utils';
+import { mailContent, mailSender } from '../utils';
 
 type SendVerificationEmailType = {
   email: string;

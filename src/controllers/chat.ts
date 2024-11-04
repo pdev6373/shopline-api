@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
-import { Chat, Message } from '@src/models';
+import { AuthenticatedRequest } from '../middlewares/authorizeRoles';
+import { Chat, Message } from '../models';
 import { StatusCodes } from 'http-status-codes';
 
 const getChats = async (req: AuthenticatedRequest, res: Response) => {

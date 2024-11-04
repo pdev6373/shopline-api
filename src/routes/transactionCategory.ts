@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { transactionCategoryController } from '@src/controllers';
-import { validateData } from '@src/middlewares';
-import { transactionCategorySchema } from '@src/schemas';
+import { transactionCategoryController } from '../controllers';
+import { validateData } from '../middlewares';
+import { transactionCategorySchema } from '../schemas';
 
 export const transactionCategoryRoutes = () => {
   const router = Router();

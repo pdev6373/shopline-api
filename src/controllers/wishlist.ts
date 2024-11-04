@@ -1,7 +1,7 @@
 import { Response } from 'express';
-import { AuthenticatedRequest } from '@src/middlewares/authorizeRoles';
+import { AuthenticatedRequest } from '../middlewares/authorizeRoles';
 import { StatusCodes } from 'http-status-codes';
-import { Wishlist } from '@src/models';
+import { Wishlist } from '../models';
 
 const addProductToWishlist = async (
   req: AuthenticatedRequest,
