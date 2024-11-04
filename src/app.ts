@@ -6,12 +6,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { connection } from 'mongoose';
-import { Server } from 'socket.io';
-import http from 'http';
+// import { Server } from 'socket.io';
+// import http from 'http';
 import { logging } from './middlewares';
 import { corsOptions, databaseConnection } from './configs';
 import routes from './routes';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { swaggerDocs } from './configs/swagger';
 
 logging.info('info');
 logging.warn('warn');
@@ -28,31 +29,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
-app.use('/api/v1', routes());
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*', // Adjust according to your frontend origin
-    methods: ['GET', 'POST'],
-  },
-});
-
-app.all('*', (req: Request, res: Response) => {
-  res
-    .status(StatusCodes.NOT_FOUND)
-    .json({ success: false, message: ReasonPhrases.NOT_FOUND });
-});
-
-app.get('/', (req: Request, res: Response) => {
-  const {} = req;
-  res.send('Express + TypeScript Server');
-});
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: {
+//     origin: '*', // Adjust according to your frontend origin
+//     methods: ['GET', 'POST'],
+//   },
+// });
 
 connection.once('open', () => {
-  server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  app.listen(Number(PORT), '0.0.0.0', () => {
+    logging.info(`Server running on port ${PORT}`);
+    app.use('/api/v1', routes());
+    app.all('*', (req: Request, res: Response) =>
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ success: false, message: ReasonPhrases.NOT_FOUND }),
+    );
   });
+
+  swaggerDocs(app);
 });
 
 connection.on('error', (err) => console.error(err));
